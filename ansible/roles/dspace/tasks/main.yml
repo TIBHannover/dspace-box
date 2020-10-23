@@ -1,0 +1,40 @@
+---
+- name: checkout dspace-angular locally
+  git:
+    repo: '{{ dspace_angular_git_url }}'
+    dest: '{{ dspace_angular_base_dir }}'
+    force: yes
+    version: '{{ dspace_angular_version }}'
+
+# "sg" (switch group) is used because the ssh connections may not be updated with the current group informations
+- name: Run docker-compose pull
+  command: 'sg docker -c "docker-compose -f docker/docker-compose.yml pull"'
+  args:
+    chdir: '{{ dspace_angular_base_dir }}'
+    
+- name: Adjust local.cfg
+  lineinfile:
+    path: '{{ dspace_angular_base_dir }}/docker/local.cfg'
+    line: '{{ item[1] }}'
+    regexp: '{{ item[0] }}'
+  loop:
+    - ["^dspace.server.url=", "dspace.server.url=http://{{ dspace_host }}:8080/server"]
+    - ["^dspace.ui.url=", "dspace.ui.url=http://{{ dspace_host }}:4000"]
+
+- name: Adjust environment.dev.ts
+  template:
+    src: environment.dev.ts.j2
+    dest: '{{ dspace_angular_base_dir }}/docker/environment.dev.ts'
+
+- name: Run docker-compose up
+  command: 'sg docker -c "docker-compose -p d7 -f docker/docker-compose.yml -f docker/docker-compose-rest.yml up -d"'
+  args:
+    chdir: '{{ dspace_angular_base_dir }}'
+
+- name: Create admin account
+  command: 'sg docker -c "docker-compose -p d7 -f docker/cli.yml run --rm dspace-cli create-administrator -e {{ dspace_admin_mail }} -f {{ dspace_admin_firstname }} -l {{ dspace_admin_lastname }} -p {{ dspace_admin_password }} -c en"'
+  args:
+    chdir: '{{ dspace_angular_base_dir }}'
+
+- include: AIP-test-data.yml
+  when: dspace_import_AIP_test_data

@@ -1,0 +1,8 @@
+
+- hosts: all
+  roles:
+    - role: geerlingguy.docker
+      become: yes
+    - role: geerlingguy.git
+      become: yes
+    - role: dspace

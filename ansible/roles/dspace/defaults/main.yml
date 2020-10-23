@@ -1,0 +1,14 @@
+---
+dspace_installation_dir: "{{ ansible_env.HOME }}" # installation directory on the target system
+dspace_angular_base_dir: "{{ dspace_installation_dir }}/dspace-angular"
+dspace_angular_git_url: "https://github.com/DSpace/dspace-angular.git"
+dspace_version: dspace-7.0-beta4
+dspace_angular_version: "{{ dspace_version }}"
+
+dspace_host: localhost
+dspace_admin_firstname: admin
+dspace_admin_lastname: user
+dspace_admin_mail: test@test.edu
+dspace_admin_password: admin
+
+dspace_import_AIP_test_data: true

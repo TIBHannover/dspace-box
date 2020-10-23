@@ -1,0 +1,11 @@
+dspace:
+  hosts:
+    192.168.98.111:
+      ansible_ssh_user: vagrant
+      ansible_ssh_private_key_file: ~/.vagrant.d/insecure_private_key
+
+      dspace_version: dspace-7.0-beta4
+      dspace_host: 192.168.98.111
+      dspace_admin_mail: test@test.edu
+      dspace_admin_password: admin
+      dspace_import_AIP_test_data: false
