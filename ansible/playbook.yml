@@ -1,0 +1,9 @@
+
+- hosts: backend
+#  become: yes
+  roles:
+    - role: geerlingguy.java
+      become: yes
+    - role: gantsign.maven
+    - role: ant
+    - role: postgresql

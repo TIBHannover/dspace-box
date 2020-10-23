@@ -1,0 +1,49 @@
+---
+postgres_dir_by_os_family:
+  default: /var/lib/pgsql/data
+  Debian: /var/lib/postgresql/11
+
+postgres_dir: "{{ postgres_dir_by_os_family[ansible_os_family] | default(postgres_dir_by_os_family['default']) }}"
+
+postgres_conf_dir_by_os_family:
+  default: "{{ postgres_dir }}"
+  Debian: /etc/postgresql/11/main
+
+postgres_conf_dir: "{{ postgres_conf_dir_by_os_family[ansible_os_family] | default(postgres_conf_dir_by_os_family['default']) }}"
+
+postgres_hba_entries_custom: []
+postgres_hba_entries_default:
+  - type: local
+    database: all
+    user: postgres
+    method: peer
+  - type: local
+    database: all
+    user: all
+    method: peer
+  - type: host
+    database: all
+    user: all
+    address: 127.0.0.1/32
+    method: md5
+  - type: host
+    database: all
+    user: all
+    address: ::1/128
+    method: md5
+  - type: local
+    database: replication
+    user: all
+    method: peer
+  - type: host
+    database: replication
+    user: all
+    address: 127.0.0.1/32
+    method: md5
+  - type: host
+    database: replication
+    user: all
+    address: ::1/128
+    method: md5
+
+postgres_hba_entries: "{{ postgres_hba_entries_custom + postgres_hba_entries_default }}"

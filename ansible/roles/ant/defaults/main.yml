@@ -1,0 +1,7 @@
+---
+ant_version: "1.10.9"
+
+ant_archive_url: "https://archive.apache.org/dist/ant/binaries/apache-ant-{{ ant_version }}-bin.tar.gz"
+
+ant_downloads_dir: "{{ ansible_download_dir | default(ansible_env.HOME + '/.ansible/tmp/downloads') }}" # Directory to store files downloaded for Apache Ant installation
+ant_install_dir: "/opt/ant" # Base installation directory

@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+{% for item in postgres_hba_entries %}
+{{ item.type }} {{ item.database }} {{ item.user }} {% if item.address is defined %}{{ item.address }}{% endif %} {{ item.method }}
+{% endfor %}

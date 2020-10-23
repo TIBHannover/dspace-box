@@ -1,0 +1,57 @@
+# tasks file for ant
+---
+- name: load version vars
+  with_first_found:
+    - '../vars/versions/{{ ant_version }}.yml'
+    - '../vars/versions/default.yml'
+  include_vars: '{{ item }}'
+  
+- name: fail if checksum is undefined
+  fail: msg='ant_archive_checksum for {{ ant_version }} is undefined'
+  when: ant_archive_checksum_sha512 is not defined
+
+- name: create download directory
+  file:
+    path: "{{ ant_downloads_dir }}"
+    state: directory
+    mode: 'u=rwx,go=rx'
+
+- name: download Apache Ant
+  get_url:
+    url: "{{ ant_archive_url }}"
+    dest: "{{ ant_downloads_dir }}/apache-ant-{{ ant_version }}-bin.tar.gz"
+    checksum: "sha512:{{ ant_archive_checksum_sha512 }}"
+
+- name: create Apache Ant installation directory
+  become: yes
+  file:
+    path: "{{ ant_install_dir }}"
+    state: directory
+    mode: 'u=rwx,go=rx'
+
+- name: install unarchive dependencies
+  become: yes
+  package:
+    name:
+      - tar
+      - unzip
+      - gzip
+    state: present
+
+- name: extract Apache Ant
+  become: yes
+  unarchive:
+    src: "{{ ant_downloads_dir }}/apache-ant-{{ ant_version }}-bin.tar.gz"
+    dest: "{{ ant_install_dir }}"
+    creates: "{{ ant_install_dir }}/apache-ant-{{ ant_version }}"
+    remote_src: yes
+
+- name: add ant to PATH
+  become: yes
+  copy:
+    dest: /etc/profile.d/ant.sh
+    mode: 'u=rw,go=r'
+    content: |
+      export ANT_HOME="{{ ant_install_dir }}/apache-ant-{{ ant_version }}"
+      export ANT_BIN="$ANT_HOME/bin"
+      export PATH="$ANT_HOME:$ANT_BIN:$PATH"

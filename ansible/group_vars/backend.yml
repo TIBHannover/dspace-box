@@ -1,0 +1,13 @@
+
+java_packages:
+  - openjdk-11-jdk
+
+ant_version: "1.10.9"
+
+postgres_listen_addresses: "localhost"
+postgres_hba_entries_custom:
+  - type: host
+    database: dspace
+    user: dspace
+    address: 127.0.0.1/32
+    method: md5
