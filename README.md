@@ -28,4 +28,4 @@ vagrant up
 
 When the installation is complete (a few minutes, depending on the download speed), dspace can be opened in the browser
 
-<http://192.168.98.111:8080/>
+<http://192.168.98.111:4000/>
