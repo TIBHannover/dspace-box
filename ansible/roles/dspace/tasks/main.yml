@@ -26,6 +26,18 @@
     src: environment.dev.ts.j2
     dest: '{{ dspace_angular_base_dir }}/docker/environment.dev.ts'
 
+- name: Fix fix-invalid-host problem when running on remote system
+  lineinfile:
+    path: '{{ dspace_angular_base_dir }}/angular.json'
+    line: '            "disableHostCheck": true,'
+    regexp: '"disableHostCheck":'
+    insertbefore: '"port": 4000'
+
+- name: Run docker-compose build
+  command: 'sg docker -c "docker-compose -p d7 -f docker/docker-compose.yml -f docker/docker-compose-rest.yml build"'
+  args:
+    chdir: '{{ dspace_angular_base_dir }}'
+
 - name: Run docker-compose up
   command: 'sg docker -c "docker-compose -p d7 -f docker/docker-compose.yml -f docker/docker-compose-rest.yml up -d"'
   args:
