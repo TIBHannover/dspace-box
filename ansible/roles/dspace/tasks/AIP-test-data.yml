@@ -1,5 +1,0 @@
----
-- name: Import AIP test data
-  command: 'sg docker -c "docker-compose -p d7 -f docker/cli.yml -f ./docker/cli.ingest.yml run --rm dspace-cli"'
-  args:
-    chdir: '{{ dspace_angular_base_dir }}'

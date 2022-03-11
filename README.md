@@ -1,4 +1,4 @@
-# Duraspace DSpace 7 Box
+# Dspace-virtualbox-setup
 
 Installation of DSpace7 via ansible.
 
@@ -9,8 +9,7 @@ Documentation see also
 * https://wiki.lyrasis.org/display/DSPACE/Running+DSpace+7+with+Docker
 
 **NOTE**:
-* DSpace 7 is still a Beta version and under active development. It is not recommended to install it in production!
-* This project should make it possible to try out DSpace 7 in a virtual box. It uses the DSpace docker image.
+* This project should make it possible to deploy DSpace 7 in a virtual box or VM (if ansible playbook is used directly). It does not use the DSpace docker image.
 
 ## Installation on local system for testing
 
@@ -21,13 +20,40 @@ Prerequisites
 
 Perform the following steps in the terminal (Linux / macOS) or in the GitBash (Windows).
 ```
-git clone https://github.com/TIBHannover/dspace-box.git
-cd dspace-box
+git clone https://git.tib.eu/dspace/dspace-virtualbox-setup.git
+cd dspace-virtualbox-setup
 vagrant up
 ```
 
 When the installation is complete (a few minutes, depending on the download speed), dspace can be opened in the browser
 
+For Dev:
+
 <http://192.168.98.111:4000/>
 
 Initial login via test@test.edu / admin
+
+For changes - the env vars at `ansible/vars/main.yml` can be modified. Example - 
+```
+  ip_client: 192.168.98.111
+  ip_server: 192.168.98.111
+  server_port: 8080
+  client_port: 4000
+  ssl_enabled_client: false
+  ssl_enabled_server: false
+  ui_namespace: /
+  server_namespace: /server 
+  admin_email: test@test.edu
+  admin_first_name: admin
+  admin_last_name: user
+  admin_password: admin
+  work_user: vagrant
+
+```
+And, 
+
+```
+env: "prod" | "dev" 
+```
+
+can be configured in the same

@@ -1,0 +1,42 @@
+---
+- name: Replace line in file pg_hba.conf
+  lineinfile:
+    path: /etc/postgresql/11/main/pg_hba.conf
+    regexp: "^(.*)local   all             all                                     peer(.*)$"
+    line: "local   all             all                                trust"
+    backrefs: yes
+  become: true
+
+- name: Modify pg_hba.conf
+  ansible.builtin.replace:
+    path: /etc/postgresql/11/main/pg_hba.conf
+    regexp: "peer"
+    replace: "trust"
+  become: true
+
+- name: Modify pg_hba.conf more
+  ansible.builtin.replace:
+    path: /etc/postgresql/11/main/pg_hba.conf
+    regexp: "ident"
+    replace: "trust"
+  become: true
+
+- name: Start and enable postgres services
+  service: "name={{ item }} state=restarted enabled=yes"
+  with_items:
+    - postgresql
+  become: true
+
+# - name: Create db user
+#   shell: psql --username=postgres dspace -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+
+- name: Add pgcrypto
+  community.postgresql.postgresql_ext:
+    name: pgcrypto
+    db: dspace
+    state: present
+  become: true
+
+
+- name: Check db
+  shell: psql postgresql://dspace:dspace@localhost:5432/dspace

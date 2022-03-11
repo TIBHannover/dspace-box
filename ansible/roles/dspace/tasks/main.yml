@@ -1,57 +1,184 @@
 ---
-- name: checkout dspace-angular locally
-  git:
-    repo: '{{ dspace_angular_git_url }}'
-    dest: '{{ dspace_angular_base_dir }}'
-    force: yes
-    version: '{{ dspace_angular_version }}'
-
-# "sg" (switch group) is used because the ssh connections may not be updated with the current group informations
-- name: Run docker-compose pull
-  command: 'sg docker -c "docker-compose -f docker/docker-compose.yml pull"'
-  args:
-    chdir: '{{ dspace_angular_base_dir }}'
-
-- name: Ensure jq is present
+- name: Creating directory for dspace download
+  file:
+    path: "{{ dspace_download_dir }}"
+    state: directory
+    owner: '{{work_user}}'
   become: true
-  package:
-    name: ["jq"]
+
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ dspace_install_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Downloading dspace backend from Dspace release
+  get_url:
+    url: "{{ dspace_download_url }}"
+    dest: "{{ dspace_download_dir }}/dspace-{{ dspace_version }}.tar.gz"
     
+
+- name: Expand dspace repository just downloaded.
+  unarchive:
+    src: "{{ dspace_download_dir }}/dspace-{{ dspace_version }}.tar.gz"
+    dest: "{{ dspace_install_dir }}"
+    remote_src: true
+    creates: '{{dspace_install_dir}}/dspace-{{ dspace_version }}/Hello.txt'
+
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ dspace_install_dir }}"
+    owner: '{{work_user}}'
+    recurse: true
+  become: true
+
+
+- name: Modify and move the configuration to the  necessary destination
+  copy: src='{{ dspace_install_dir }}/DSpace-dspace-{{ dspace_version }}/dspace/config/local.cfg.EXAMPLE' dest='{{ dspace_install_dir }}/DSpace-dspace-{{ dspace_version }}/dspace/config/local.cfg' remote_src=true follow=yes
+
+
+
 - name: Adjust local.cfg
   lineinfile:
-    path: '{{ dspace_angular_base_dir }}/docker/local.cfg'
-    line: '{{ item[1] }}'
-    regexp: '{{ item[0] }}'
+    path: "{{dspace_install_dir}}/DSpace-dspace-{{dspace_version}}/dspace/config/local.cfg"
+    line: "{{ item[1] }}"
+    regexp: "{{ item[0] }}"
   loop:
-    - ["^dspace.server.url=", "dspace.server.url=http://{{ dspace_host }}:8080/server"]
-    - ["^dspace.ui.url=", "dspace.ui.url=http://{{ dspace_host }}:4000"]
+    - [
+        "^dspace.server.url=",
+        "dspace.server.url=http://{{ ip_server }}:{{ server_port }}/server",
+      ]
+    - ["^dspace.ui.url=", "dspace.ui.url=http://{{ ip_client }}:{{ client_port }}"]
+    - [
+        "^dspace.server.url = ",
+        "dspace.server.url = http://{{ ip_server }}:{{ server_port }}/server",
+      ]
+    - ["^dspace.ui.url = ", "dspace.ui.url = http://{{ ip_client }}:{{ client_port }}"]
 
-- name: Adjust environment.dev.ts
+- name: create directory for dspace installation
+  file:
+    path: /dspace
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Give permission to the dspace user
+  file:
+    path: /dspace
+    owner: '{{work_user}}'
+    recurse: true
+  become: true
+
+- name: Create symbolic link 
+  file:
+    src: '/opt/ant/apache-ant-{{ ant_version }}/bin/ant'
+    dest: /usr/bin/ant
+    state: link  
+    force: yes  
+  become: true 
+
+- name: Run 'mvn pkg' command to build dspace
+  shell: mvn package
+  become: true
+  args: 
+    chdir: '{{ dspace_install_dir }}/DSpace-dspace-{{dspace_version}}'
+
+- name: Give permission to the dspace user
+  file:
+    path: /dspace
+    owner: '{{work_user}}'
+    recurse: true  
+  become: true
+
+- name: Give permission to the dspace user
+  file:
+    path: '{{ dspace_install_dir }}'
+    owner: '{{work_user}}'
+    recurse: true  
+  become: true
+
+
+- name: Check db whether able to login
+  shell: psql postgresql://dspace:dspace@localhost:5432/dspace
+
+- name: Install dspace by using ant
+  shell: ant fresh_install
+  args:
+    chdir: '{{ dspace_install_dir}}/DSpace-dspace-{{ dspace_version }}/dspace/target/dspace-installer'
+
+
+- name: Copy solr cfg file
+  copy:
+    src: ../files/solr.in.sh
+    dest: "{{ solr_install_dir }}/solr-{{ solr_version }}/bin/solr.in.sh"
+    follow: yes
+  become: true
+
+- name: Copy a folders
+  ansible.builtin.copy:
+    src: /dspace/webapps/
+    dest: '{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/webapps'
+    directory_mode: yes
+    remote_src: yes
+    follow: yes
+  become: true
+
+- name: Check and add env vars
+  shell: '{{ tomcat_install_dir}}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh'
+
+
+
+
+- name: Copy a folders solr cores
+  ansible.builtin.copy:
+    src: /dspace/solr/
+    dest: '{{ solr_install_dir}}/solr-{{ solr_version }}/server/solr/configsets'
+    remote_src: yes
+    directory_mode: yes
+  become: true
+
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ solr_install_dir }}"
+    owner: '{{work_user}}'
+    recurse: true
+  become: true 
+
+- name: Ensure solr is started and enabled on boot.
+  shell: /opt/bin/solr/solr-{{ solr_version }}/bin/solr restart -force &
+  args:
+    warn: false 
+
+- name: Copy rc cfg file
+  copy:
+    src: "../files/rc-local.service"
+    dest: "/etc/systemd/system/rc-local.service"
+    follow: yes   
+  become: true 
+
+
+- name: Copy rc-local cfg file
   template:
-    src: environment.dev.ts.j2
-    dest: '{{ dspace_angular_base_dir }}/docker/environment.dev.ts'
+    src: "../files/rc.local"
+    dest: "/etc/rc.local"
+    mode: +x
+    follow: yes 
+  become: true
 
-- name: Fix invalid-host-problem when running on remote system
-  shell: | 
-    jq '.projects."dspace-angular".architect.serve.options += {"disableHostCheck": true}' \
-    angular.json > angular.json.tmp && mv angular.json.tmp angular.json
+- name: restart services script injected
+  systemd:
+    enabled: true
+    name: rc-local  
+  become: true  
+
+- name: Create dspace user
+  shell: '/dspace/bin/dspace create-administrator -e {{ admin_email }} -f {{ admin_first_name }} -l {{ admin_last_name }} -p {{ admin_password }} -c en'
+
+- name: Test REST conn
+  shell: yarn test:rest
   args:
-    chdir: '{{ dspace_angular_base_dir }}'
+    chdir: /ng/ngrocks
+    
 
-- name: Run docker-compose build
-  command: 'sg docker -c "docker-compose -p d7 -f docker/docker-compose.yml -f docker/docker-compose-rest.yml build"'
-  args:
-    chdir: '{{ dspace_angular_base_dir }}'
-
-- name: Run docker-compose up
-  command: 'sg docker -c "docker-compose -p d7 -f docker/docker-compose.yml -f docker/docker-compose-rest.yml up -d"'
-  args:
-    chdir: '{{ dspace_angular_base_dir }}'
-
-- name: Create admin account
-  command: 'sg docker -c "docker-compose -p d7 -f docker/cli.yml run --rm dspace-cli create-administrator -e {{ dspace_admin_mail }} -f {{ dspace_admin_firstname }} -l {{ dspace_admin_lastname }} -p {{ dspace_admin_password }} -c en"'
-  args:
-    chdir: '{{ dspace_angular_base_dir }}'
-
-- include: AIP-test-data.yml
-  when: dspace_import_AIP_test_data
+# 
