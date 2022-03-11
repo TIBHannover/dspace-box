@@ -1,0 +1,154 @@
+---
+- name: Update apt
+  apt: update_cache=yes state=present
+  become: true
+
+- name: Download nodejs
+  shell: curl -sL '{{ node_download_url }}' | bash -
+  become: true 
+
+
+- name: install git
+  apt:
+    pkg:
+     - git
+     - wget
+     - "jq"
+     - curl
+     - nodejs
+     - nfs4-acl-tools
+     - acl
+    state: present
+    update_cache: true 
+  become: true
+
+- name: check whoami
+  shell: whoami
+
+- name: Creates directory
+  file:
+    path: "{{ angular_home_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Download the frontend UI code from the gitrepo of DSpace
+  git:
+    repo: "{{ dspace_angular_git_url }}"
+    dest: "{{ angular_home_dir }}"
+    version: "{{ dspace_angular_version }}"
+    force: yes
+    clone: yes
+    update: no
+
+
+- name: Update permissions after code is cloned
+  file:
+    path: "{{ angular_home_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+    recurse: true
+  become: true  
+
+- name: install angular cli
+  npm:
+      name: "@angular/cli"
+      global: yes
+  become: true
+
+- name: install npm pkgs
+  npm:
+      name: nodemon
+      global: yes
+  become: true
+
+- name: Install yarn
+  npm:
+    name: yarn
+    global: yes
+  become: true
+
+- name: Install cross-env
+  npm:
+    name: cross-env   
+    global: yes
+  become: true
+
+- name: Install pm2
+  npm:
+    name: pm2   
+    global: yes
+  become: true
+       
+
+- name: copy config file for dev
+  template:
+    src: ../files/config.dev.yml
+    dest: "{{ angular_home_dir }}/config/config.yml"
+    follow: yes
+    mode: +x
+  when: env == "dev"
+
+
+- name: copy config file for prod
+  template:
+    src: ../files/config.prod.yml
+    dest: "{{ angular_home_dir }}/config/config.prod.yml"
+    follow: yes
+    mode: +x
+  when: env == "prod"
+
+
+
+- name: copy pm2 startupfile
+  template:
+    src: ../files/dspace-angular.json
+    dest: "{{ angular_home_dir }}/../dspace-angular.json"
+    mode: +x
+  when: env == "prod"
+
+
+- name: Install packages based on package.json.
+  yarn:
+    path: "{{ angular_home_dir }}"
+  become: true
+
+- name: update permissions after node_modules are added
+  file:
+    path: "{{ angular_home_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+    recurse: true
+  become: true    
+
+- name: Fix invalid-host-problem when running on remote system
+  shell: |
+    jq '.projects."dspace-angular".architect.serve.options += {"disableHostCheck": true}' \
+    angular.json > angular.json.tmp && mv angular.json.tmp angular.json
+  args:
+    chdir: "{{ angular_home_dir }}"
+  when: env == "dev"
+
+- name: run local UI DSpace server
+  shell: pm2 start "yarn run start:dev"
+  args:
+    chdir: "{{ angular_home_dir }}"
+  when: env == "dev"
+
+- name: run local UI DSpace server on production
+  shell: yarn run build:prod
+  args:
+    chdir: "{{ angular_home_dir }}"
+  when: env == "prod"  
+
+- name: run local server on production
+  shell: pm2 start dspace-angular.json
+  args:
+    chdir: "{{ angular_home_dir }}/../"
+  when: env == "prod"
+
+- name: non root
+  shell: 'env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u {{work_user}} --hp /home/{{work_user}}'
+  become: true
+
+

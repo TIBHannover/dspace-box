@@ -1,5 +1,7 @@
 ---
-- src: geerlingguy.git
-  version: 3.0.0
-- src: geerlingguy.docker
-  version: 2.9.0
+roles:
+    - geerlingguy.postgresql
+collections:
+    - community.general
+    - community.postgresql 
+    - ansible.posix

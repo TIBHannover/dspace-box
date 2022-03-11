@@ -1,0 +1,41 @@
+---
+- name: Creates directory for tomcat download
+  file:
+    path: "{{ tomcat_download_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Creates directory for tomcat installation
+  file:
+    path: "{{ tomcat_install_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Download tomcat.
+  get_url:
+    url: "{{ tomcat_download_url }}"
+    dest: "{{ tomcat_download_dir }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+
+
+- name: Expand tomcat.
+  unarchive:
+    src: "{{ tomcat_download_dir }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "{{ tomcat_install_dir }}"
+    remote_src: true
+    creates: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/README.txt"
+
+
+- name: Copy tomcat file
+  copy:
+    src: "../files/server.xml"
+    dest: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
+    follow: yes
+
+
+- name: Adjust tomcat config
+  lineinfile:
+    path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/conf/tomcat-users.xml"
+    line: '<user username="dspace" password="dspace" roles="admin-script,manager-gui,dspace"/>'
+    insertbefore: "^</tomcat-users>"

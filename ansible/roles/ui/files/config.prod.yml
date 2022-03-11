@@ -1,0 +1,11 @@
+ui:
+  ssl: {{ ssl_enabled_client }}
+  host: {{ ip_client }}
+  port: {{ client_port }}
+  nameSpace: {{ ui_namespace }}
+
+rest:
+  ssl: {{ ssl_enabled_server }}
+  host: {{ ip_server }}
+  port: {{ server_port }}
+  nameSpace: {{ server_namespace }}
