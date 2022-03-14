@@ -32,6 +32,9 @@ tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-9/v{{tomcat_
 solr_download_url: "https://www.apache.org/dyn/closer.lua/lucene/solr/{{solr_version}}/solr-{{solr_version}}.tgz?action=download"
 env: "dev"
 
+tomcat_user: dspace
+tomcat_password: dspace
+
 ip_client: 192.168.98.111
 ip_server: 192.168.98.111
 server_port: 8080
@@ -47,6 +50,8 @@ admin_password: admin
 work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
 dspace_user: dspace
 dspace_password: dspace
+
+
 
 # In `ansible/vars/main.yml`, you will find work_user and dspace_user as different as dspace_user is optional but can be created and may be required for solr and tomcat servers.
 # See documentation links in readme for more Info.
