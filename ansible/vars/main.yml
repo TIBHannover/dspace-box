@@ -45,5 +45,7 @@ admin_first_name: admin
 admin_last_name: user
 admin_password: admin
 work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
+dspace_user: dspace
+dspace_password: dspace
 
 
