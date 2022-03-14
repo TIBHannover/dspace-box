@@ -92,7 +92,7 @@
 
 - name: copy config file for prod
   template:
-    src: ../files/config.prod.yml
+    src: ../files/config.dev.yml
     dest: "{{ angular_home_dir }}/config/config.prod.yml"
     follow: yes
     mode: +x
