@@ -16,7 +16,7 @@ solr_download_dir: /opt/tmp/solr
 solr_install_dir: /opt/bin/solr
 ant_version: 1.10.10
 dspace_angular_version: dspace-7.2
-tomcat_version: 9.0.8
+tomcat_version: 9.0.59
 solr_version: 8.11.1
 
 dspace_version: 7.2
