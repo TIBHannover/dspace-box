@@ -32,12 +32,16 @@ For Dev:
 
 <http://192.168.98.111:4000/>
 
-Initial login via test@test.edu / admin
 
 For changes - the env vars at `ansible/vars/main.yml` can be modified. Example -  
 
 ```
 env: "prod" | "dev" 
 ```
-
 can be configured in the same
+
+In `ansible/vars/main.yml`, you will find work_user and dspace_user as different as dspace_user is optional but can be created and may be required for solr and tomcat servers.
+
+See documentation links above for more Info.
+
+Initial login via test@test.edu / admin
