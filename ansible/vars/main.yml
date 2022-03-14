@@ -46,5 +46,4 @@ admin_last_name: user
 admin_password: admin
 work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
 
-# you can create prod vars just by overriding the above dev vars as prod: -> prod vars
 
