@@ -28,7 +28,7 @@
 
 
 - name: Copy tomcat file
-  copy:
+  template:
     src: "../files/server.xml"
     dest: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
     follow: yes
