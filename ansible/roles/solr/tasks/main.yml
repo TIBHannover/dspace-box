@@ -45,7 +45,7 @@
 - name: Creating user "{{ uusername }}" with admin access
   user: 
     name: '{{ dspace_user }}'
-    password: {{ dspace_password | password_hash('sha512') }}
+    password: "{{ dspace_password | password_hash('sha512') }}"
   become: true
 
 - name: add permissions
