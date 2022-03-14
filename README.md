@@ -1,4 +1,4 @@
-# Dspace-virtualbox-setup
+# dspace-box
 
 Installation of DSpace7 via ansible.
 
@@ -20,9 +20,10 @@ Prerequisites
 
 Perform the following steps in the terminal (Linux / macOS) or in the GitBash (Windows).
 ```
-git clone https://git.tib.eu/dspace/dspace-virtualbox-setup.git
-cd dspace-virtualbox-setup
-vagrant up
+
+git clone https://github.com/TIBHannover/dspace-box.git
+cd dspace-box
+
 ```
 
 When the installation is complete (a few minutes, depending on the download speed), dspace can be opened in the browser
