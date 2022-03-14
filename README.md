@@ -23,6 +23,7 @@ Perform the following steps in the terminal (Linux / macOS) or in the GitBash (W
 
 git clone https://github.com/TIBHannover/dspace-box.git
 cd dspace-box
+vagrant up
 
 ```
 
