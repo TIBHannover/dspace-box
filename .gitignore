@@ -1,0 +1,11 @@
+# General
+.vagrant/
+
+ansible/node_modules/
+
+
+ansible/yarn.*
+
+
+# Log files (if you are creating logs in debug mode, uncomment this)
+# *.log
