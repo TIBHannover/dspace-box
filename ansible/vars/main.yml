@@ -48,4 +48,5 @@ work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
 dspace_user: dspace
 dspace_password: dspace
 
-
+# In `ansible/vars/main.yml`, you will find work_user and dspace_user as different as dspace_user is optional but can be created and may be required for solr and tomcat servers.
+# See documentation links in readme for more Info.
