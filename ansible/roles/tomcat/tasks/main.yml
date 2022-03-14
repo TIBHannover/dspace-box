@@ -37,5 +37,5 @@
 - name: Adjust tomcat config
   lineinfile:
     path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/conf/tomcat-users.xml"
-    line: '<user username="dspace" password="dspace" roles="admin-script,manager-gui,dspace"/>'
+    line: '<user username={{ dspace_user }} password={{ dspace_password }} roles="admin-script,manager-gui,dspace"/>'
     insertbefore: "^</tomcat-users>"
