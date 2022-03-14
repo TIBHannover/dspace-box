@@ -34,24 +34,7 @@ For Dev:
 
 Initial login via test@test.edu / admin
 
-For changes - the env vars at `ansible/vars/main.yml` can be modified. Example - 
-```
-  ip_client: 192.168.98.111
-  ip_server: 192.168.98.111
-  server_port: 8080
-  client_port: 4000
-  ssl_enabled_client: false
-  ssl_enabled_server: false
-  ui_namespace: /
-  server_namespace: /server 
-  admin_email: test@test.edu
-  admin_first_name: admin
-  admin_last_name: user
-  admin_password: admin
-  work_user: vagrant
-
-```
-And, 
+For changes - the env vars at `ansible/vars/main.yml` can be modified. Example -  
 
 ```
 env: "prod" | "dev" 
