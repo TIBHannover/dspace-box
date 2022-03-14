@@ -19,12 +19,11 @@ Prerequisites
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
 Perform the following steps in the terminal (Linux / macOS) or in the GitBash (Windows).
-```
 
+```
 git clone https://github.com/TIBHannover/dspace-box.git
 cd dspace-box
 vagrant up
-
 ```
 
 When the installation is complete (a few minutes, depending on the download speed), dspace can be opened in the browser
