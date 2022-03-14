@@ -64,9 +64,11 @@
              Java HTTP Connector: /docs/config/http.html
              Java AJP  Connector: /docs/config/ajp.html
              APR (HTTP/AJP) Connector: /docs/apr.html
-             Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
+             Define a non-SSL/TLS HTTP/1.1 Connector on port 
+
+
         -->
-        <Connector port="8080"
+        <Connector port="{{server_port}}"
               minSpareThreads="25"
               enableLookups="false"
               redirectPort="8443"
