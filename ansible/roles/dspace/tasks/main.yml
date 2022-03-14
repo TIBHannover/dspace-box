@@ -107,14 +107,6 @@
   args:
     chdir: '{{ dspace_install_dir}}/DSpace-dspace-{{ dspace_version }}/dspace/target/dspace-installer'
 
-
-# - name: Copy solr cfg file
-#   copy:
-#     src: ../files/solr.in.sh
-#     dest: "{{ solr_install_dir }}/solr-{{ solr_version }}/bin/solr.in.sh"
-#     follow: yes
-#   become: true
-
 - name: Copy a folders
   ansible.builtin.copy:
     src: /dspace/webapps/
