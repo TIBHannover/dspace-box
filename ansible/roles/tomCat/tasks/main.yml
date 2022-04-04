@@ -3,12 +3,11 @@
   apt: state=present
   become: true
 
-- name: Install Java.
+- name: Install tomcat.
   apt: name=tomcat9 state=present
   become: true
-     # UI admin password
 
-- name: Install Java.
+- name: Install tomcat-admin.
   apt: name=tomcat9-admin state=present
   become: true
 
