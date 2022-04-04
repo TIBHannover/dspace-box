@@ -8,6 +8,10 @@
   apt: update_cache=yes state=present
   become: true
 
+- name: install nodejs
+  shell: apt-get install -y nodejs
+  become: true  
+
 - name: install git
   apt:
     pkg:
@@ -16,7 +20,6 @@
      - wget
      - "jq"
      - curl
-     - nodejs
      - python3-psycopg2 
      - adduser
      - net-tools
