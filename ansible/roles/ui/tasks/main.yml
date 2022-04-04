@@ -4,12 +4,8 @@
   become: true
 
 - name: Download nodejs
-  shell: curl -sL https://deb.nodesource.com/setup_16.x -o setup_14.sh
+  shell: curl -sL '{{ node_download_url }}' | bash -
   become: true 
-
-- name: install nodejs
-  shell: sh ./setup_14.sh
-  become: true
 
 
 - name: install git
@@ -25,7 +21,6 @@
      - adduser
      - net-tools
      - lsof
-     - nodejs
     state: present
     update_cache: true 
   become: true
