@@ -3,9 +3,9 @@
   apt: update_cache=yes state=present
   become: true
 
-- name: Download nodejs
-  shell: curl -sL '{{ node_download_url }}' | bash -
-  become: true 
+# - name: Download nodejs
+#   shell: curl -sL '{{ node_download_url }}' | bash -
+#   become: true 
 
 
 - name: install git
@@ -21,6 +21,8 @@
      - adduser
      - net-tools
      - lsof
+     - nodejs
+     - npm
     state: present
     update_cache: true 
   become: true
