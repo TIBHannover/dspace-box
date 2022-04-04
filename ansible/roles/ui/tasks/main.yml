@@ -3,9 +3,13 @@
   apt: update_cache=yes state=present
   become: true
 
-# - name: Download nodejs
-#   shell: curl -sL '{{ node_download_url }}' | bash -
-#   become: true 
+- name: Download nodejs
+  shell: curl -sL https://deb.nodesource.com/setup_14.x -o setup_14.sh
+  become: true 
+
+- name: install nodejs
+  shell: sh ./setup_14.sh
+  become: true
 
 
 - name: install git
@@ -22,7 +26,6 @@
      - net-tools
      - lsof
      - nodejs
-     - npm
     state: present
     update_cache: true 
   become: true
