@@ -1,7 +1,7 @@
 ---
 
 - name: Download nodejs
-  shell: curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh && bash /tmp/nodesource_setup.sh
+  shell: 'curl -sL {{ node_download_url }} -o /tmp/nodesource_setup.sh && bash /tmp/nodesource_setup.sh'
   become: true 
 
 - name: Update apt
