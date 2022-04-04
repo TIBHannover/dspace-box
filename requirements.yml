@@ -1,0 +1,8 @@
+roles:
+- src: enix.postgresql
+- src: zaxos.tomcat-ansible-role
+- src: geerlingguy.postgresql
+collections:
+   - community.general
+   - community.postgresql 
+   - ansible.posix

@@ -1,0 +1,174 @@
+---
+- name: Update apt repo and cache on all Debian/Ubuntu boxes
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Upgrade all packages on servers
+  apt:
+    upgrade: dist
+    force_apt_get: yes
+  become: true
+
+- name: Install required packages
+  apt:
+    name:
+      - gnupg2
+      - wget
+      - python3-psycopg2
+      - acl
+      - ncat
+      - postgresql
+      - postgresql-contrib
+    state: latest
+  become: true
+
+- name: adding existing user '{{ user }}' to group sudo
+  user:
+    name: "{{ work_user }}"
+    groups: postgres
+    append: yes
+  become: true
+
+- name: start postgres
+  shell: systemctl start postgresql.service
+  become: true
+
+- name: start postgres
+  shell: systemctl status postgresql.service
+  become: true
+
+- name: start postgres
+  shell: systemctl enable postgresql.service
+  become: true
+
+- name: Ensure PostgreSQL is listening on *
+  lineinfile:
+    dest: /etc/postgresql/11/main/postgresql.conf
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses='*'"
+    state: present
+  become: true
+
+- name: check conf db
+  shell: cat /etc/postgresql/11/main/postgresql.conf
+  become: true
+
+- name: Add new configuration to "pg_hba.conf"
+  blockinfile:
+    dest: /etc/postgresql/11/main/pg_hba.conf
+    block: |
+      host    all             all             0.0.0.0/0                md5
+      host    all             all             ::/0                     trust
+  become: true
+
+- name: Modify pg_hba.conf
+  ansible.builtin.replace:
+    path: /etc/postgresql/11/main/pg_hba.conf
+    regexp: "md5"
+    replace: "trust"
+  become: true
+
+- name: Modify pg_hba.conf
+  ansible.builtin.replace:
+    path: /etc/postgresql/11/main/pg_hba.conf
+    regexp: "peer"
+    replace: "trust"
+  become: true
+
+- name: check conf
+  shell: cat /etc/postgresql/11/main/pg_hba.conf
+  become: true
+
+- name: start postgres
+  shell: systemctl reload postgresql.service
+  become: true
+
+
+- name: create non-existing 'postgres' role in db
+  become: true
+  become_method: su
+  become_user: "{{ remote_server_user | default(work_user)}}"
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_password }}"
+    role_attr_flags: CREATEDB,SUPERUSER
+    state: present
+
+- name: Create a super database
+  become: true
+  become_method: su
+  become_user: "{{ remote_server_user | default(work_user)}}"
+  postgresql_db:
+    name: "{{ postgres_user }}"
+    login_user: "{{ postgres_user}}"
+    login_password: "{{ postgres_password }}"    
+
+
+
+- name: create non-existing role in db
+  become: true
+  become_method: su
+  become_user: "{{ remote_server_user | default(work_user)}}"
+  postgresql_user:
+    name: "{{ remote_server_user | default(work_user)}}"
+    password: "{{ remote_server_pass | default(omit)}}"
+    role_attr_flags: CREATEDB,SUPERUSER
+    login_user: "{{ postgres_user }}"
+    login_password: "{{ postgres_password }}"
+    state: present
+
+- name: Create a super database
+  become: true
+  become_method: su
+  become_user: "{{ remote_server_user | default(work_user)}}"
+  postgresql_db:
+    name: "{{ remote_server_user | default(work_user)}}"
+    login_user: "{{ postgres_user}}"
+    login_password: "{{ postgres_password }}"
+
+- name: Create a Superuser PostgreSQL database user
+  become: true
+  become_method: su
+  become_user: "{{ remote_server_user | default(work_user)}}"
+  postgresql_user:
+    name: '{{ dspace_user }}'
+    password: '{{ dspace_password }}'
+    role_attr_flags: CREATEDB,NOSUPERUSER
+    login_user: "{{ postgres_user}}"
+    login_password: "{{ postgres_password }}"
+    state: present
+
+
+- name: Create a PostgreSQL database
+  become: true
+  become_method: su
+  become_user: "{{ remote_server_user | default(work_user)}}"
+  postgresql_db:
+    name: '{{ db_name }}'
+    owner: '{{ dspace_user }}'
+    login_user: "{{ postgres_user }}"
+    login_password: "{{ postgres_password }}"
+
+
+- name: Add pgcrypto
+  community.postgresql.postgresql_ext:
+    name: pgcrypto
+    db: '{{ db_name }}'
+    state: present
+    login_user: "{{ postgres_user }}"
+    login_password: "{{ postgres_password }}"
+  become: true
+
+
+
+- name: PostgreSQL ping dbsrv server using not default credentials and ssl
+  postgresql_ping:
+    db: '{{ db_name }}'
+    login_user: "{{ postgres_user }}"
+    login_password: "{{ postgres_password }}"
+    login_host: localhost
+    port: 5432
+  become: true

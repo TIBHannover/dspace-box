@@ -1,0 +1,120 @@
+---
+__postgresql_version: "11"
+__postgresql_data_dir: "/var/lib/postgresql/{{ __postgresql_version }}/main"
+__postgresql_bin_path: "/usr/lib/postgresql/{{ __postgresql_version }}/bin"
+__postgresql_config_path: "/etc/postgresql/{{ __postgresql_version }}/main"
+__postgresql_daemon: "postgresql@{{ postgresql_version }}-main"
+__postgresql_packages:
+  - postgresql
+  - postgresql-contrib
+  - libpq-dev
+# Debian 10 uses Python 3 by default.
+postgresql_python_library: python3-psycopg2
+
+
+
+
+
+postgresql_users:
+
+  - {
+    name: dspace,
+    password: dspace,
+    encrypted: yes,
+    expires: 'infinity',
+    state: 'present'
+    }
+postgresql_databases:
+
+  - { 
+    name: 'dspace',
+    encoding: 'UTF-8',
+    state: 'present'
+    }
+
+postgresql__hba_entries:
+  - {type: local, database: all, user: postgres, auth_method: trust}
+  - {type: local, database: all, user: all, auth_method: trust}
+  - {type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: trust}
+  - {type: host, database: all, user: all, address: '::1/128', auth_method: trust}
+
+postgresql__global_config_options:
+  - option: listen_addresses
+    value: '*'  
+
+allow_world_readable_tmpfiles: true
+
+  
+
+ant_download_dir: /opt/tmp/ant
+ant_install_dir: /opt/ant
+dspace_download_dir: /opt/tmp/dspace
+dspace_install_dir: /opt/bin/dspace
+tomcat_download_dir: /opt/tmp/tomcat
+tomcat_install_dir: /opt
+solr_download_dir: /opt/tmp/solr
+solr_install_dir: /opt/bin/solr
+ant_version: 1.10.10
+dspace_angular_version: dspace-7.2
+tomcat_version: 9.0.59
+solr_version: 8.11.1
+
+dspace_version: 7.2.1
+maven_version: 3.8.5
+nodejs_version: 14.x
+
+ant_download_url: "https://archive.apache.org/dist/ant/binaries/apache-ant-{{ ant_version }}-bin.tar.gz"
+dspace_download_url: "https://github.com/DSpace/DSpace/archive/refs/tags/dspace-{{ dspace_version }}.tar.gz"
+maven_download_url: "http://mirror.olnevhost.net/pub/apache/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz"
+dspace_angular_git_url: https://github.com/DSpace/dspace-angular.git
+angular_home_dir: /ng/ngrocks
+node_download_url: "https://deb.nodesource.com/setup_{{ nodejs_version }}"
+tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-9/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz"
+solr_download_url: "https://www.apache.org/dyn/closer.lua/lucene/solr/{{solr_version}}/solr-{{solr_version}}.tgz?action=download"
+env: "dev"
+
+tomcat_user: dspace
+tomcat_password: dspace
+
+ip_client: 192.168.98.111
+ip_server: 192.168.98.111
+server_port: 8080
+client_port: 4000
+ssl_enabled_client: false
+ssl_enabled_server: false
+ui_namespace: /
+server_namespace: /server 
+admin_email: 'test@test.edu'
+admin_first_name: 'admin'
+admin_last_name: 'user'
+admin_password: 'admin'
+
+work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
+dspace_user: dspace
+dspace_password: dspace
+
+db_name: dspace
+db_username: dspace
+db_password: dspace
+postgres_user: postgres
+postgres_password: postgres
+
+
+postgres_root_user: usrpostgres
+postgres_root_pass: postgres123$
+
+remote_server_user: '{{ work_user }}'
+
+
+
+
+# In `ansible/vars/main.yml`, you will find work_user and dspace_user as different as dspace_user is optional but can be created and may be required for solr and tomcat servers.
+# See documentation links in readme for more Info.
+
+                         # Tomcat version to install
+ui_manager_user: tomcat                    # User who can access the UI manager section only
+ui_manager_pass: tomcat      # UI manager user password
+ui_admin_username: tomcat                    # User who can access bpth manager and admin UI sections
+ui_admin_pass: tomcat  
+tomcat_install_java: false
+tomcat_webapps_auto_deployment: false

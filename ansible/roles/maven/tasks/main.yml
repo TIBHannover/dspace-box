@@ -1,0 +1,41 @@
+---
+
+- name: Creating directory for maven download
+  file:
+    path: /maven
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Downloading maven for Dspace backend
+  get_url:
+    url: "{{ maven_download_url }}"
+    dest: "/maven/apache-maven-{{ maven_version }}-bin.tar.gz"
+ 
+- name: Expand dspace repository just downloaded.
+  unarchive:
+    src: "/maven/apache-maven-{{ maven_version }}-bin.tar.gz"
+    dest: "/maven"
+    remote_src: true  
+  
+
+- name: mv maven file
+  copy:
+    src: '/maven/apache-maven-{{ maven_version }}/'
+    dest: /usr/local/apache-maven
+    directory_mode: yes
+    remote_src: true
+    follow: yes
+  become: true
+
+
+- name: Create symbolic link
+  file:
+    src:  /usr/local/apache-maven/bin/mvn
+    dest: /usr/bin/mvn
+    state: link
+    force: yes
+  become: true
+
+- name: Readying the mvn pkg command
+  shell: export MAVEN_OPTS="-Xmx4G"

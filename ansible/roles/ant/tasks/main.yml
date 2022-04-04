@@ -1,0 +1,31 @@
+---
+- name: Creates directory for ant download
+  file:
+    path: "{{ ant_download_dir }}"
+    state: directory
+  become: true
+
+- name: Creates directory for ant
+  file:
+    path: "{{ ant_install_dir }}"
+    state: directory
+  become: true
+
+- name: Download Ant.
+  get_url:
+    url: "{{ ant_download_url }}"
+    dest: "{{ ant_install_dir }}/apache-ant.tgz"
+  become: true
+
+- name: Expand Ant.
+  unarchive:
+    src: "{{ ant_install_dir }}/apache-ant.tgz"
+    dest: "/opt/ant"
+    remote_src: true
+  become: true
+
+- name: Copying ant file
+  template:
+    src: ../files/ant.sh
+    dest: "{{ ant_install_dir }}/etc/profile.d/"
+  become: true

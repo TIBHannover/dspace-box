@@ -1,0 +1,28 @@
+---
+- name: Update apt
+  apt: state=present
+  become: true
+
+- name: Install Java.
+  apt: name=tomcat9 state=present
+  become: true
+     # UI admin password
+
+- name: Install Java.
+  apt: name=tomcat9-admin state=present
+  become: true
+
+- name: start tomcat
+  shell: systemctl start tomcat9
+  become: true
+
+- name: Adjust tomcat config
+  lineinfile:
+    path: "/etc/tomcat9/tomcat-users.xml"
+    line: '<user username={{tomcat_user}} password={{tomcat_password}} roles="admin-script,manager-gui,dspace"/>'
+    insertbefore: "^</tomcat-users>"
+  become: true
+
+- name: start tomcat
+  shell: systemctl restart tomcat9
+  become: true

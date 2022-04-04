@@ -1,0 +1,77 @@
+---
+- name: Creates directory for ant temporary download
+  file:
+    path: "{{ solr_download_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Creates directory for ant installation
+  file:
+    path: "{{ solr_install_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Download Solr.
+  get_url:
+    url: "{{ solr_download_url }}"
+    dest: "{{ solr_download_dir }}/solr-{{ solr_version }}.tgz"
+    validate_certs: false
+
+
+- name: Expand Solr.
+  unarchive:
+    src: "{{ solr_download_dir }}/solr-{{ solr_version }}.tgz"
+    dest: "{{ solr_install_dir }}"
+    creates: "{{ solr_install_dir }}/solr-{{ solr_version }}/README.txt"
+    remote_src: true
+
+
+- name: Run Solr installation script.
+  command: "> {{ solr_install_dir }}/solr-{{ solr_version }}/bin/install_solr_service.sh \ {{ solr_download_dir }}/solr-{{ solr_version }}.tgz \ -i /opt \ -d /var/solr \ -u solr \ -s solr \ -p 8983 \ creates={{ solr_install_dir }}"
+
+- name: Copy solr cfg file
+  copy:
+    src: "../files/solr.in.sh"
+    dest: "{{ solr_install_dir }}/solr-{{ solr_version }}/bin/solr.in.sh"
+    follow: yes
+  become: true
+
+
+- name: Daemon start
+  shell: systemctl daemon-reload
+  become: true
+
+- name: Creating user "{{ uusername }}" with admin access
+  user: 
+    name: '{{ dspace_user }}'
+    password: "{{ dspace_password | password_hash('sha512') }}"
+  become: true
+
+- name: add permissions
+  file: 
+    path: '{{ solr_install_dir }}'
+    owner: dspace
+    recurse: yes
+  become: true
+
+- name: Ensure solr is started and enabled on boot.
+  shell: '{{ solr_install_dir }}/solr-{{ solr_version }}/bin/solr start -f -v -force &'
+  args:
+    warn: false
+    chdir: '{{ solr_install_dir }}/solr-{{ solr_version }}/example'
+
+# - name: Ensure solr is started and enabled on boot.
+#   shell: '{{ solr_install_dir }}/solr-{{ solr_version }}/bin/solr -h renate01.develop.service.tib.eu -p 8983 config -property SOLR_AUTH_TYPE -value "None"' 
+#   args:
+#     warn: false
+#     chdir: '{{ solr_install_dir }}/solr-{{ solr_version }}/example'    
+
+# - name: Ensure solr is started and enabled on boot.
+#   shell: '{{ solr_install_dir }}/solr-{{ solr_version }}/bin/solr auth disable'
+#   args:
+#     warn: false
+
+
+

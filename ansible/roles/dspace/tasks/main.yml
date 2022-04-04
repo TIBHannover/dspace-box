@@ -1,0 +1,175 @@
+---
+- name: Creating directory for dspace download
+  file:
+    path: "{{ dspace_download_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ dspace_install_dir }}"
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Downloading dspace backend from Dspace release
+  get_url:
+    url: "{{ dspace_download_url }}"
+    dest: "{{ dspace_download_dir }}/dspace-{{ dspace_version }}.tar.gz"
+    
+
+- name: Expand dspace repository just downloaded.
+  unarchive:
+    src: "{{ dspace_download_dir }}/dspace-{{ dspace_version }}.tar.gz"
+    dest: "{{ dspace_install_dir }}"
+    remote_src: true
+    creates: '{{dspace_install_dir}}/dspace-{{ dspace_version }}/Hello.txt'
+
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ dspace_install_dir }}"
+    owner: '{{work_user}}'
+    recurse: true
+  become: true
+
+
+- name: Modify and move the configuration to the  necessary destination
+  copy: src='{{ dspace_install_dir }}/DSpace-dspace-{{ dspace_version }}/dspace/config/local.cfg.EXAMPLE' dest='{{ dspace_install_dir }}/DSpace-dspace-{{ dspace_version }}/dspace/config/local.cfg' remote_src=true follow=yes
+
+
+
+- name: Adjust local.cfg
+  lineinfile:
+    path: "{{dspace_install_dir}}/DSpace-dspace-{{dspace_version}}/dspace/config/local.cfg"
+    line: "{{ item[1] }}"
+    regexp: "{{ item[0] }}"
+  loop:
+    - [
+        "^dspace.server.url=",
+        "dspace.server.url=http://{{ ip_server }}:{{ server_port }}/server",
+      ]
+    - ["^dspace.ui.url=", "dspace.ui.url=http://{{ ip_client }}:{{ client_port }}"]
+    - [
+        "^dspace.server.url = ",
+        "dspace.server.url = http://{{ ip_server }}:{{ server_port }}/server",
+      ]
+    - ["^dspace.ui.url = ", "dspace.ui.url = http://{{ ip_client }}:{{ client_port }}"]
+
+
+- name: create directory for dspace installation
+  file:
+    path: /dspace
+    state: directory
+    owner: '{{work_user}}'
+  become: true
+
+- name: Give permission to the dspace user
+  file:
+    path: /dspace
+    owner: '{{work_user}}'
+    recurse: true
+  become: true
+
+- name: Create symbolic link 
+  file:
+    src: '/opt/ant/apache-ant-{{ ant_version }}/bin/ant'
+    dest: /usr/bin/ant
+    state: link  
+    force: yes  
+  become: true 
+
+- name: Run 'mvn pkg' command to build dspace
+  shell: mvn package
+  become: true
+  args: 
+    chdir: '{{ dspace_install_dir }}/DSpace-dspace-{{dspace_version}}'
+
+- name: Give permission to the dspace user
+  file:
+    path: /dspace
+    owner: '{{work_user}}'
+    recurse: true  
+  become: true
+
+- name: Give permission to the dspace user
+  file:
+    path: '{{ dspace_install_dir }}'
+    owner: '{{work_user}}'
+    recurse: true  
+  become: true
+
+
+# - name: Check db whether able to login
+#   shell: psql postgresql://dspace:dspace@localhost:5432/dspace
+
+- name: Install dspace by using ant
+  shell: ant fresh_install
+  args:
+    chdir: '{{ dspace_install_dir}}/DSpace-dspace-{{ dspace_version }}/dspace/target/dspace-installer'
+
+- name: Copy a folders
+  ansible.builtin.copy:
+    src: /dspace/webapps/server
+    dest: '/var/lib/tomcat9/webapps'
+    directory_mode: yes
+    remote_src: yes
+    follow: yes
+  become: true
+
+- name: restart tomcat
+  shell: systemctl restart tomcat9
+  become: true
+
+- name: Copy a folders solr cores
+  ansible.builtin.copy:
+    src: /dspace/solr/
+    dest: '{{ solr_install_dir}}/solr-{{ solr_version }}/server/solr/configsets'
+    remote_src: yes
+    directory_mode: yes
+  become: true
+
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ solr_install_dir }}"
+    owner: '{{work_user}}'
+    recurse: true
+  become: true 
+
+- name: Ensure solr is started and enabled on boot.
+  shell: /opt/bin/solr/solr-{{ solr_version }}/bin/solr restart -force &
+  args:
+    warn: false 
+
+- name: Copy rc cfg file
+  copy:
+    src: "../files/rc-local.service"
+    dest: "/etc/systemd/system/rc-local.service"
+    follow: yes   
+  become: true 
+
+
+- name: Copy rc-local cfg file
+  template:
+    src: "../files/rc.local"
+    dest: "/etc/rc.local"
+    mode: +x
+    follow: yes 
+  become: true
+
+- name: restart services script injected
+  systemd:
+    enabled: true
+    name: rc-local  
+  become: true  
+
+- name: Create dspace user
+  shell: '/dspace/bin/dspace create-administrator -e {{ admin_email }} -f {{ admin_first_name }} -l {{ admin_last_name }} -p {{ admin_password }} -c en'
+
+
+
+- name: Test REST conn
+  shell: yarn test:rest
+  args:
+    chdir: /ng/ngrocks
+    
