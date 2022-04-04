@@ -39,13 +39,5 @@ For changes - the env vars at `ansible/vars/main.yml` can be modified. Example -
 env: "prod" | "dev" 
 ```
 
-To deploy on remote server, you can provide the username and password as so:
-
-```
-remote_server_user: user
-remote_server_pass: secret
-```
-
-can be configured in the same
 
 Initial login via test@test.edu / admin
