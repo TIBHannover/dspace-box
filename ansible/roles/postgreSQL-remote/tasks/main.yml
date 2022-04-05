@@ -22,6 +22,7 @@
       - ncat
       - postgresql
       - postgresql-contrib
+      - python-pip3
     state: latest
   become: true
 
