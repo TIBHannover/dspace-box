@@ -31,6 +31,12 @@
 - name: check whoami
   shell: whoami
 
+- name: Delete already existing directory
+  file:
+    path: "{{ angular_home_dir }}"
+    state: absent
+  become: true  
+
 - name: Creates directory
   file:
     path: "{{ angular_home_dir }}"
