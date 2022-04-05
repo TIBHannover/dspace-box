@@ -1,5 +1,9 @@
 ---
 
+- name: install curl
+  shell: apt-get install -y curl
+  become: true  
+
 - name: Download nodejs
   shell: 'curl -sL {{ node_download_url }} -o /tmp/nodesource_setup.sh && bash /tmp/nodesource_setup.sh'
   become: true 
@@ -19,7 +23,6 @@
      - git
      - wget
      - "jq"
-     - curl
      - python3-psycopg2 
      - adduser
      - net-tools
