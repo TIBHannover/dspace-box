@@ -26,6 +26,8 @@
   become: true
 
 - pip: {name: psycopg2, state: present}
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
 
 - name: adding existing user '{{ user }}' to group sudo
   user:
