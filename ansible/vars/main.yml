@@ -88,6 +88,11 @@ admin_email: 'test@test.edu'
 admin_first_name: 'admin'
 admin_last_name: 'user'
 admin_password: 'admin'
+client_http_protocol: http
+server_http_protocol: http
+
+cfg_server_url: http://192.168.98.111:8080/server
+cfg_client_url: http://192.168.98.111:4000
 
 work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
 dspace_user: dspace

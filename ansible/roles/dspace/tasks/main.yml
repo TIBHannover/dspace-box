@@ -47,14 +47,14 @@
   loop:
     - [
         "^dspace.server.url=",
-        "dspace.server.url=http://{{ ip_server }}:{{ server_port }}/server",
+        "dspace.server.url={{ cfg_server_url }}",
       ]
-    - ["^dspace.ui.url=", "dspace.ui.url=http://{{ ip_client }}:{{ client_port }}"]
+    - ["^dspace.ui.url=", "dspace.ui.url={{ cfg_client_url }}"]
     - [
         "^dspace.server.url = ",
-        "dspace.server.url = http://{{ ip_server }}:{{ server_port }}/server",
+        "dspace.server.url = {{ cfg_server_url }}",
       ]
-    - ["^dspace.ui.url = ", "dspace.ui.url = http://{{ ip_client }}:{{ client_port }}"]
+    - ["^dspace.ui.url = ", "dspace.ui.url = {{ cfg_client_url }}"]
 
 
 - name: create directory for dspace installation
