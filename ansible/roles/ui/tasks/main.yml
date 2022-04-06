@@ -156,6 +156,10 @@
     chdir: "{{ angular_home_dir }}"
   when: env == "prod"  
 
+- name: expose std ports
+  shell: setcap 'cap_net_bind_service=+ep' /usr/bin/node
+  when: env == "prod"    
+
 - name: run local server on production
   shell: pm2 start dspace-angular.json
   args:
