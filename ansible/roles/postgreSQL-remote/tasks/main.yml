@@ -17,12 +17,13 @@
     name:
       - gnupg2
       - wget
-      - python3-psycopg2
       - acl
       - ncat
       - postgresql
       - postgresql-contrib
       - python3-pip
+      - libpq-dev
+      - python-psycopg2
     state: latest
   become: true
 
