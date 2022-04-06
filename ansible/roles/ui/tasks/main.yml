@@ -27,6 +27,7 @@
      - adduser
      - net-tools
      - lsof
+     - libcap2-bin
     state: present
     update_cache: true 
   become: true
