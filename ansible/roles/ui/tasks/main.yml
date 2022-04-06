@@ -27,7 +27,6 @@
      - adduser
      - net-tools
      - lsof
-     - libcap2-bin
     state: present
     update_cache: true 
   become: true
@@ -156,6 +155,11 @@
   args:
     chdir: "{{ angular_home_dir }}"
   when: env == "prod"  
+
+- name: install nodejs
+  shell: apt-get install -y libcap2-bin
+  become: true
+  when: env == "prod"
 
 - name: expose std ports
   shell: setcap 'cap_net_bind_service=+ep' /usr/bin/node
