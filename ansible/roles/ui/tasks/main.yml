@@ -68,6 +68,7 @@
 - name: install angular cli
   npm:
       name: "@angular/cli"
+      version: '11.2.15'
       global: yes
   become: true
 
