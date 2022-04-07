@@ -152,7 +152,7 @@
   when: env == "dev"
 
 - name: run local UI DSpace server on production
-  shell: 'ng config -g cli.warnings.versionMismatch false && ng build --configuration production --base-href {{ cfg_base_href }} && ng run dspace-angular:server:production --base-href {{ cfg_base_href }}'
+  shell: 'ng config -g cli.warnings.versionMismatch false && ng build --configuration production --base-href {{ cfg_base_href }} && ng run dspace-angular:server:production --base-href {{ cfg_base_href }} 2> /dev/null'
   args:
     chdir: "{{ angular_home_dir }}"
   when: env == "prod"  
