@@ -110,6 +110,8 @@ postgres_root_pass: postgres123$
 
 remote_server_user: '{{ work_user }}'
 
+cfg_base_href: /
+
 
 
 

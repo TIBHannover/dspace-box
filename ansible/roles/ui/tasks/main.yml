@@ -151,7 +151,7 @@
   when: env == "dev"
 
 - name: run local UI DSpace server on production
-  shell: yarn run build:prod
+  shell: 'ng build --configuration production --base-href {{ cfg_base_href }} && ng run dspace-angular:server:production --base-href {{ cfg_base_href }}'
   args:
     chdir: "{{ angular_home_dir }}"
   when: env == "prod"  
