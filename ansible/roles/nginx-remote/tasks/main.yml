@@ -1,11 +1,7 @@
 - name: ensure nginx is at the latest version
   apt: name=nginx state=latest
   become: true
-
-# - name: unlink
-#   shell:  unlink /etc/nginx/sites-enabled/default
-#   become: true
-
+  
 - name: start nginx
   service:
       name: nginx
@@ -26,12 +22,6 @@
 - name: checkng nginx cfg file
   shell:  cat /etc/nginx/nginx.conf
   become: true  
-
-# - name: config test
-#   shell: service nginx configtest
-#   become: true
-
-
 
 - name: restart nginx
   service:
