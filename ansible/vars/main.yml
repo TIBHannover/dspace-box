@@ -93,6 +93,7 @@ server_http_protocol: http
 
 cfg_server_url: http://192.168.98.111:8080/server
 cfg_client_url: http://192.168.98.111:4000
+cfg_client_url_http: http://192.168.98.111
 
 work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
 dspace_user: dspace
