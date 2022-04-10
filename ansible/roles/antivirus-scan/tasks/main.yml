@@ -1,0 +1,27 @@
+- name: Update apt
+  apt: state=present
+  become: true
+
+- name: Install clamav.
+  apt: name=clamav state=present
+  become: true
+
+- name: Install clamav-daemon.
+  apt: name=clamav-daemon state=present
+  become: true  
+
+- name: running antivirus scan
+  shell: service clamav-freshclam stop 
+  become: true  
+
+- name: freshclam cmd
+  shell: freshclam
+  become: true
+
+- name: run cmd service
+  shell: service clamav-freshclam start
+  become: true
+
+- name: clamscan cmd
+  shell: clamscan /dspace/*
+  become: true

@@ -21,6 +21,7 @@
     - maven
     - dspace
     - nginx-remote
+    - antivirus-scan
   
   tasks:
   

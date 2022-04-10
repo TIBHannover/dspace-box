@@ -7,14 +7,14 @@ Vagrant.configure("2") do |config|
 
 
 
-  config.vm.define "dspace-vm-77" do |srv|
+  config.vm.define "dspace-vm" do |srv|
     srv.vm.box = "debian/buster64"
     srv.ssh.insert_key = false
     srv.vm.hostname = "dspace.box"
     srv.vm.network :private_network, ip: "192.168.98.111"
 
     srv.vm.provider :virtualbox do |vb| 
-      vb.name = "dspace"
+      vb.name = "dspace-vm"
       vb.memory = 8048
       vb.cpus = 2
     end
