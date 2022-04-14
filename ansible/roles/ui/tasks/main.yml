@@ -102,7 +102,7 @@
 - name: copy config file for dev
   template:
     src: ../files/config.dev.yml
-    dest: "{{ angular_home_dir }}/config/config.dev.yml"
+    dest: "{{ angular_home_dir }}/config/config.yml"
     follow: yes
     mode: +x
   when: env == "dev"
