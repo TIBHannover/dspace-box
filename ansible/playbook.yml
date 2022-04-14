@@ -20,7 +20,6 @@
     - postgreSQL-remote
     - maven
     - dspace
-    - nginx-remote
   
   tasks:
   
