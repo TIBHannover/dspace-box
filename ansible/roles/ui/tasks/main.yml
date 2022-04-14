@@ -55,7 +55,9 @@
     force: yes
     clone: yes
     update: no
-
+    
+- name: Switch branch
+  shell: cd {{ angular_home_dir }} && git checkout dev
 
 - name: Update permissions after code is cloned
   file:
