@@ -83,7 +83,7 @@ client_port: 4000
 ssl_enabled_client: false
 ssl_enabled_server: false
 ui_namespace: /
-server_namespace: /server 
+server_namespace: /server
 admin_email: 'test@test.edu'
 admin_first_name: 'admin'
 admin_last_name: 'user'
@@ -91,9 +91,9 @@ admin_password: 'admin'
 client_http_protocol: http
 server_http_protocol: http
 
-cfg_server_url: http://192.168.98.111:8080/server
-cfg_client_url: http://192.168.98.111:4000
-cfg_client_url_http: http://192.168.98.111
+cfg_server_url: "{{ server_http_protocol }}://{{ ip_server }}:{{ server_port }}{{ server_namespace }}"
+cfg_client_url: "{{ client_http_protocol }}://{{ ip_client }}:{{ client_port }}{{ ui_namespace }}"
+cfg_client_url_http: "{{ client_http_protocol }}://{{ ip_client }}"
 
 work_user:  "{{ ansible_user | default(lookup('env', 'USER')) }}"
 dspace_user: dspace
