@@ -20,7 +20,7 @@ Environment="JAVA_OPTS=-Djava.awt.headless=true"
 # Lifecycle
 Type=simple
 # ExecStartPre=+/usr/libexec/tomcat9/tomcat-update-policy.sh
-ExecStart=/bin/sh /usr/libexec/tomcat9/tomcat-start.sh
+ExecStart=usr/libexec/tomcat9/tomcat-start.sh
 SuccessExitStatus=143
 Restart=on-abort
 
