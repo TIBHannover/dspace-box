@@ -28,8 +28,8 @@
 
 
   
-- name: check tomcat
-  shell: cd /etc/systemd/system/multi-user.target.wants && cat tomcat9.service
+# - name: check tomcat
+#   shell: cd /etc/systemd/system/multi-user.target.wants && cat tomcat9.service
 
 - name:  copying tomcat service file
   copy:
