@@ -34,7 +34,7 @@
 - name:  copying tomcat service file
   copy:
     src: ../files/tomcat9.service
-    dest: /etc/systemd/system/multi-user.target.wants/tomcat9.service
+    dest: /lib/systemd/system/tomcat9.service
     follow: yes
   become: true   
 
