@@ -24,9 +24,12 @@
   become: true 
 
 - name: start tomcat
-  shell: systemctl start tomcat9
+  shell: systemctl daemon-reload
   become: true
 
+- name: start tomcat
+  shell: systemctl start tomcat9
+  become: true
 
   
 # - name: check tomcat
@@ -35,7 +38,7 @@
 - name:  copying tomcat service file
   copy:
     src: ../files/tomcat9.service
-    dest: /etc/systemd/system/multi-user.target.wants/tomcat9.service
+    dest: /lib/systemd/system/tomcat9.service
     follow: yes
     force: yes
   become: true   
