@@ -92,7 +92,7 @@
 #   shell: psql postgresql://dspace:dspace@localhost:5432/dspace
 
 - name: Install dspace by using ant
-  shell: ant fresh_install
+  shell: ant update
   args:
     chdir: '{{ dspace_download_dir }}/dspace/target/dspace-installer'
   become: true
