@@ -179,7 +179,7 @@
     version: "{{ dspace_version }}"
     force: yes
     clone: yes
-    update: no
+    update: yes
 
 - name: update db
   shell: 'psql -U postgres {{ db_name }} < {{ migrate_path }}' 
