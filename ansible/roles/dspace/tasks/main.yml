@@ -16,6 +16,12 @@
     recurse: true
   become: true
 
+- name: Creating directory for dspace installation
+  file:
+    path: "{{ dspace_download_dir }}"
+    owner: '{{work_user}}'
+    recurse: true
+  become: true
 
 - name: Modify and move the configuration to the  necessary destination
   copy: src='{{ dspace_download_dir }}/dspace/config/local.cfg.EXAMPLE' dest='{{ dspace_download_dir }}/dspace/config/local.cfg' remote_src=true follow=yes
