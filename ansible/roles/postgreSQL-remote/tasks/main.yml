@@ -172,6 +172,10 @@
     owner: '{{work_user}}'
   become: true
   
+- name: Remove the dspace downloaded code
+  shell: "cd {{ dspace_download_dir }} && rm -rf *"
+  become: true
+  
 - name: Download the backend code from the gitrepo of DSpace
   git:
     repo: "{{ dspace_backend_url }}"
