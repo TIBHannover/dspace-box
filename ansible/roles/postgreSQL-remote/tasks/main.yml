@@ -184,6 +184,7 @@
     force: yes
     clone: yes
     update: yes
+  become: true
 
 - name: update db
   shell: 'psql -U postgres {{ db_name }} < {{ migrate_path }}' 
