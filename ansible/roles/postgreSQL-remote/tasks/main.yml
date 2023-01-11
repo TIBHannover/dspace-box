@@ -172,9 +172,9 @@
     owner: '{{work_user}}'
   become: true
   
-- name: Remove the dspace downloaded code
-  shell: "cd {{ dspace_download_dir }} && rm -rf *"
-  become: true
+# - name: Remove the dspace downloaded code
+#   shell: "cd {{ dspace_download_dir }} && rm -rf *"
+#   become: true
   
 - name: Download the backend code from the gitrepo of DSpace
   git:
@@ -183,7 +183,7 @@
     version: "{{ dspace_version }}"
     force: yes
     clone: yes
-    update: yes
+    update: no
 
 - name: update db
   shell: 'psql -U postgres {{ db_name }} < {{ migrate_path }}' 
