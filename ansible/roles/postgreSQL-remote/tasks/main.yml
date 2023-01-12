@@ -183,7 +183,7 @@
     version: "{{ dspace_version }}"
     force: yes
     clone: yes
-    update: {{ update_code }}
+    update: "{{ update_code }}"
   become: true
 
 - name: update db
