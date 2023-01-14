@@ -26,6 +26,10 @@
 
 - name: update db
   shell: '{{ dspace_install_dir }}/bin/dspace database migrate ignored' 
+  
+- name: update oai
+  shell: '{{ dspace_install_dir }}/bin/dspace oai import'   
+  
 
 # - name: Add pgcrypto
 #   community.postgresql.postgresql_ext:
