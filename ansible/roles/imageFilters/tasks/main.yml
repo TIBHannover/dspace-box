@@ -1,0 +1,13 @@
+---
+- name: Update apt
+  apt: state=present
+  become: true
+  
+- name: install imagemagick
+  apt:
+    pkg:
+     - imagemagick
+     - ghostscript
+    state: present
+    update_cache: true 
+  become: true  
