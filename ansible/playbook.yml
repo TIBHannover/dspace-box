@@ -18,6 +18,7 @@
     - tomCat
     - postgreSQL-remote
     - maven
+    - imageFilters
     - dspace
     - role: dspace-migration
       when: migrate == true
