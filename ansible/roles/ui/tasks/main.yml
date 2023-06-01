@@ -77,7 +77,7 @@
 - name: install angular cli
   npm:
       name: "@angular/cli"
-      version: '11.2.15'
+      version: '{{ angular_cli_version }}'
       global: yes
   become: true
 
