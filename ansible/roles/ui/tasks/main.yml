@@ -91,6 +91,7 @@
   npm:
     name: yarn
     global: yes
+    version: "{{ yarn_version }}"
   become: true
 
 - name: Install cross-env
