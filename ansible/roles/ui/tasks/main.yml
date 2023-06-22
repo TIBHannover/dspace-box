@@ -64,7 +64,6 @@
     version: "{{ dspace_angular_version }}"
     force: yes
     clone: yes
-    update: no
     
 - name: Update permissions after code is cloned
   file:
