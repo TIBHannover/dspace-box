@@ -92,6 +92,7 @@
     name: yarn
     global: yes
     version: "{{ yarn_version }}"
+    state: latest
   become: true
 
 - name: Install cross-env
