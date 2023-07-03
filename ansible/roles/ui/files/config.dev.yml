@@ -9,3 +9,39 @@ rest:
   host: {{ public_server_host }}
   port: {{ public_server_port }}
   nameSpace: {{ server_namespace }}
+
+# Submission settings
+submission:
+  autosave:
+    # NOTE: which metadata trigger an autosave
+    metadata: ['dc.title', 'dc.type', 'dc.relation.doi']
+    # NOTE: after how many time (milliseconds) submission is saved automatically
+    # eg. timer: 5 * (1000 * 60); // 5 minutes
+    timer: 1 * (1000 * 60)
+# Whether to enable Markdown (https://commonmark.org/) and MathJax (https://www.mathjax.org/)
+# display in supported metadata fields. By default, only dc.description.abstract is supported.
+markdown:
+  enabled: true
+  mathjax: false
+# Theme Config
+themes:
+  - name: renate
+    headTags:
+      - tagName: link
+        attributes:
+          rel: icon
+          href: assets/renate/images/favicons/favicon.ico
+          sizes: any
+      - tagName: link
+        attributes:
+          rel: icon
+          href: assets/renate/images/favicons/favicon.svg
+          type: image/svg+xml
+      - tagName: link
+        attributes:
+          rel: apple-touch-icon
+          href: assets/renate/images/favicons/apple-touch-icon.png
+      - tagName: link
+        attributes:
+          rel: manifest
+          href: assets/renate/images/favicons/manifest.webmanifest
