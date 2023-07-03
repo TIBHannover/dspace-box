@@ -108,25 +108,13 @@
    
 - name: stop all prior pm2 processes
   shell: pm2 stop all &
-  
-- name: copy config file for dev
+
+- name: copy config file
   template:
     src: ../files/config.yml.j2
     dest: "{{ angular_home_dir }}/config/config.yml"
     follow: yes
     mode: +x
-  when: env == "dev"
-
-
-- name: copy config file for prod
-  template:
-    src: ../files/config.yml.j2
-    dest: "{{ angular_home_dir }}/config/config.prod.yml"
-    follow: yes
-    mode: +x
-  when: env == "prod"
-
-
 
 - name: copy pm2 startupfile
   template:
