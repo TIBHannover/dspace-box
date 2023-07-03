@@ -111,7 +111,7 @@
   
 - name: copy config file for dev
   template:
-    src: ../files/config.dev.yml
+    src: ../files/config.yml.j2
     dest: "{{ angular_home_dir }}/config/config.yml"
     follow: yes
     mode: +x
@@ -120,7 +120,7 @@
 
 - name: copy config file for prod
   template:
-    src: ../files/config.dev.yml
+    src: ../files/config.yml.j2
     dest: "{{ angular_home_dir }}/config/config.prod.yml"
     follow: yes
     mode: +x
