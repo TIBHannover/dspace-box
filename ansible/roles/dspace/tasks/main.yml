@@ -24,9 +24,7 @@
   become: true
 
 - name: Modify and move the configuration to the  necessary destination
-  copy: src='{{ dspace_download_dir }}/dspace/config/local.cfg.EXAMPLE' dest='{{ dspace_download_dir }}/dspace/config/local.cfg' remote_src=true follow=yes
-
-
+  copy: src='{{ dspace_config_localcfg_path }}' dest='{{ dspace_download_dir }}/dspace/config/local.cfg' remote_src='{{ dspace_config_localcfg_remote }}' follow=yes
 
 - name: Adjust local.cfg
   lineinfile:
@@ -44,12 +42,14 @@
         "dspace.server.url = {{ public_server_url | regex_replace('/$', '') }}",
       ]
     - ["^dspace.ui.url = ", "dspace.ui.url = {{ public_client_url | regex_replace('/$', '') }}"]
+  when: dspace_config_localcfg_remote
 
 - name: adjust more
   lineinfile:
     line: "dspace.ui.url = {{ public_client_url | regex_replace('/$', '') }}"
     path: "{{dspace_download_dir}}/dspace/config/local.cfg"
     insertafter: EOF
+  when: dspace_config_localcfg_remote
 
 - name: create directory for dspace installation
   file:

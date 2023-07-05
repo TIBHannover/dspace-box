@@ -91,6 +91,8 @@ admin_last_name: 'user'
 admin_password: 'admin'
 client_http_protocol: http
 server_http_protocol: http
+dspace_config_localcfg_remote: true
+dspace_config_localcfg_path: "{{ dspace_download_dir }}/dspace/config/local.cfg.EXAMPLE"
 
 install_apache: false
 apache_listening_port: 80
