@@ -10,6 +10,13 @@ rest:
   port: {{ public_server_port }}
   nameSpace: {{ server_namespace }}
 
+info:
+  # Whether the end user agreement is required before users may use the repository.
+  # If enabled, the user will be required to accept the agreement before they can use the repository.
+  # If disabled, the page will not exist and no agreement is required to use the repository
+  enableEndUserAgreement: false
+  # Whether the privacy statement should exist or not.
+  enablePrivacyStatement: false
 # Submission settings
 submission:
   autosave:
