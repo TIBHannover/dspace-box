@@ -4,7 +4,7 @@
            "name": "dspace-angular",
            "cwd": "{{ angular_home_dir }}",
            "script": "dist/server/main.js",
-           "instances": "3",
+           "instances": "4",
            "exec_mode" : "cluster",
            "env": {
               "NODE_ENV": "production"
