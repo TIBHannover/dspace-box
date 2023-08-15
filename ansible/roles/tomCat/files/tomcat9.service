@@ -14,13 +14,13 @@ RequiresMountsFor=/var/log/tomcat9 /var/lib/tomcat9
 # PrivateTmp=false
 Environment="CATALINA_HOME=/usr/share/tomcat9"
 Environment="CATALINA_BASE=/var/lib/tomcat9"
-Environment="CATALINA_TMPDIR=/tmp" "
+Environment="CATALINA_TMPDIR=/tmp"
 Environment="JAVA_OPTS=-Djava.awt.headless=true"
 
 # Lifecycle
 Type=simple
 # ExecStartPre=+/usr/libexec/tomcat9/tomcat-update-policy.sh
-ExecStart=+/usr/libexec/tomcat9/tomcat-start.sh
+ExecStart=/usr/libexec/tomcat9/tomcat-start.sh
 SuccessExitStatus=143
 Restart=on-abort
 
