@@ -36,7 +36,7 @@
 #   shell: cd /etc/systemd/system/multi-user.target.wants && cat tomcat9.service
 
 - name:  copying tomcat service file
-  copy:
+  template:
     src: ../files/tomcat9.service
     dest: /lib/systemd/system/tomcat9.service
     follow: yes
