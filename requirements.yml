@@ -1,4 +1,2 @@
-collections:
-   - community.general
-   - community.postgresql 
-   - ansible.posix
+- src: geerlingguy.docker
+  version: 6.2.0

@@ -1,4 +1,0 @@
-- name: Create dspace users
-  shell: '/dspace/bin/dspace user --add --email {{ item.email }} -g {{ item.first_name }} -s {{ item.last_name }} -p {{ item.password }} -c en'
-  with_items:
-    - "{{ dspace_users }}"

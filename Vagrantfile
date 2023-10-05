@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
     ansible.compatibility_mode = "2.0"
     ansible.install_mode = "pip_args_only"
     ansible.pip_install_cmd = "sudo apt-get install -y python3-distutils && curl -s https://bootstrap.pypa.io/get-pip.py | sudo python3"
-    ansible.pip_args = "ansible-core==2.11.8"
+    ansible.pip_args = "ansible-core==2.13.7"
     ansible.verbose = true
     ansible.playbook = "ansible/playbook.yml"
     ansible.galaxy_role_file = "requirements.yml"
