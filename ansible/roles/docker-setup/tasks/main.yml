@@ -17,7 +17,7 @@
 
 - name: Init swarm
   command:
-    cmd: sg docker -c "docker swarm init --advertise-addr {{ internal_server_host }}"
+    cmd: sg docker -c "docker swarm init {{ '--advertise-addr ' + docker_swarm_advertise_addr if (docker_swarm_advertise_addr is defined) and (docker_swarm_advertise_addr != "") and (docker_swarm_advertise_addr is not none) else '' }}"
   when: docker_swarm_info_result.rc != 0
 
 - name: Check network

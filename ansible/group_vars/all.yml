@@ -21,6 +21,7 @@ use_private_docker_registry: false
 docker_registry_url:
 docker_registry_user:
 docker_registry_password:
+docker_swarm_advertise_addr: "{{ internal_server_host }}"
 
 dspace_backend_image: dspace/dspace:dspace-7.6
 dspace_backend_solr_image: dspace/dspace-solr:dspace-7.6
