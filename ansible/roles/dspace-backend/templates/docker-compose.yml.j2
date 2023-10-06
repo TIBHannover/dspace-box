@@ -1,0 +1,119 @@
+# This is the docker-compose file to run the backend of DSpace 7
+# The backend and frontend must have on common network. The backend
+# must know the IP addresses the frontend might use to connect.
+# Therfore, please create an external network dspacenet. It is
+# referenced by this compose file as well as the compose file for the
+# frontend. To create the network please run `docker network create 
+# --attachable --subnet 172.28.0.0/24 dspacenet`.
+# You might want to change the ip address of the network. If you
+# change that ip address space, you must change the environment
+# variable 'proxies__P__trusted__P__ipranges' of the dspace service in
+# here as well.
+#
+# docker-compose file created by The Library Code GmbH.
+version: '3.8'
+services:
+  # DATABASE POSTGRESQL
+  postgres:
+    image: {{ dspace_backend_psql_image }}
+    environment:
+      # we must set a password for the postgres super user
+      POSTGRES_PASSWORD: {{ postgres_dspace_db_password }}
+      # we will create a user for DSpace without super user privileges
+      # we will create a database owned by this user
+      # provide the name of the database, the user and its password
+#      - POSTGRES_DSPACE_DB=dspace
+#      - POSTGRES_DSPACE_USER=dspace
+#      - POSTGRES_DSPACE_PWD=dspace
+      POSTGRES_DB: {{ postgres_dspace_db_name }}
+      POSTGRES_USER: {{ postgres_dspace_db_username }}
+      PGDATA: /var/lib/postgresql/data
+    networks:
+      dspacenet:
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  
+  # SOLR
+  solr:
+    image: {{ dspace_backend_solr_image }}
+    networks:
+      dspacenet:
+    working_dir: /var/solr/data
+    volumes:
+      - solr:/var/solr/data
+    entrypoint:
+      - /bin/bash
+      - '-c'
+      - |
+        init-var-solr
+        precreate-core authority /dspace/solr/authority
+        cp -r -u /dspace/solr/authority/* authority
+        precreate-core oai /dspace/solr/oai
+        cp -r -u /dspace/solr/oai/* oai
+        precreate-core search /dspace/solr/search
+        cp -r -u /dspace/solr/search/* search
+        precreate-core statistics /dspace/solr/statistics
+        cp -r -u /dspace/solr/statistics/* statistics
+        exec solr -f
+
+  # DSPACE BACKEND
+  dspace:
+    image: {{ dspace_backend_image }}
+    depends_on:
+      - postgres
+      - solr
+    networks:
+      dspacenet:
+    ports:
+      - 8080:8080
+    volumes:
+      - dspace-assetstore:/dspace/assetstore
+      - dspace-exports:/dspace/exports
+      - dspace-log:/dspace/log
+      - dspace-uploads:/dspace/upload
+      - dspace-sitemaps:/dspace/sitemaps
+    environment:
+      JAVA_OPTS: '-Xmx2000m'
+      db__P__url: 'jdbc:postgresql://postgres:5432/{{ postgres_dspace_db_name }}'
+      db__P__username: '{{ postgres_dspace_db_username }}'
+      db__P__password: '{{ postgres_dspace_db_password }}'
+      solr__P__server: 'http://solr:8983/solr'
+      proxies__P__trusted__P__ipranges: '172.28.0.0-172.28.0.255'
+      # the following lines tell DSpace where the REST-API is reachable
+      # and how the UI can be addressed. These URLs are important to
+      # generate links.
+      # Use the following two lines in production
+      dspace__P__ui__P__url: '{{ public_ui_url }}'
+      dspace__P__server__P__url: '{{ public_server_url }}'
+      # Use these two lines for local testing. Attention: you must
+      # change the Dockerfile of the frontend as dspace-angular
+      # must run in development mode if you want to use a REST API
+      # without a valid SSL certificat.
+      #dspace__P__ui__P__url: 'http://localhost:4000'
+      #dspace__P__server__P__url: 'http://localhost:8080/server'
+    command:
+      - /bin/bash
+      - '-c'
+      - |
+        while (!</dev/tcp/postgres/5432) > /dev/null 2>&1; do sleep 1; done;
+        /dspace/bin/dspace database migrate
+        catalina.sh run
+
+volumes:
+  dspace-assetstore:
+  dspace-exports:
+  dspace-log:
+  dspace-uploads:
+  dspace-sitemaps:
+  pgdata:
+  solr:
+
+networks:
+  # please create this network externally, so that we can use it
+  # for the backend and the frontend.
+  # It must use an ip address range, that is listed up in the
+  # configuration property 'proxies.trusted.ipranges' of the dspace
+  # backend. This can be set in your local.cfg or in an environment
+  # variable set in this file above.
+  dspacenet:
+    external: true

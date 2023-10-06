@@ -1,1 +1,7 @@
 ---
+- hosts: all
+  roles:
+    - init-facts
+    - docker-setup
+    - dspace-backend
+    - dspace-frontend

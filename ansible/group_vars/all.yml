@@ -1,0 +1,30 @@
+---
+
+base_path: ""
+server_namespace: "{{ base_path }}/server"
+ui_namespace: "{{ base_path }}/"
+public_server_host: 192.168.56.111
+internal_server_host: "{{ public_server_host }}"
+public_server_port: "8080"
+public_server_protocol: http
+public_ui_host: "{{ public_server_host }}"
+public_ui_port: "4000"
+public_ui_protocol: http
+
+postgres_password: dspace
+postgres_dspace_db_name: dspace
+postgres_dspace_db_username: dspace
+postgres_dspace_db_password: dspace
+
+# if using docker-images from a private registry, configure the following lines
+use_private_docker_registry: false
+docker_registry_url:
+docker_registry_user:
+docker_registry_password:
+
+dspace_backend_image: dspace/dspace:dspace-7.6
+dspace_backend_solr_image: dspace/dspace-solr:dspace-7.6
+dspace_backend_psql_image: dspace/dspace-postgres-pgcrypto:dspace-7.6
+dspace_frontend_image: dspace/dspace-angular:dspace-7.6
+dspace_frontend_replicas: 1
+dspace_frontend_use_node_command: false

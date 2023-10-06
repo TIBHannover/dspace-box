@@ -1,0 +1,1 @@
+dspace_backend_install_dir: "{{ base_dir }}/dspace-backend"
