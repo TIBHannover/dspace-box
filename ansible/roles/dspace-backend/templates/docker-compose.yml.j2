@@ -46,14 +46,14 @@ services:
       - '-c'
       - |
         init-var-solr
-        precreate-core authority /dspace/solr/authority
-        cp -r -u /dspace/solr/authority/* authority
-        precreate-core oai /dspace/solr/oai
-        cp -r -u /dspace/solr/oai/* oai
-        precreate-core search /dspace/solr/search
-        cp -r -u /dspace/solr/search/* search
-        precreate-core statistics /dspace/solr/statistics
-        cp -r -u /dspace/solr/statistics/* statistics
+        precreate-core authority {{ dspace_backend_solr_config_path }}/authority
+        cp -r -u {{ dspace_backend_solr_config_path }}/authority/* authority
+        precreate-core oai {{ dspace_backend_solr_config_path }}/oai
+        cp -r -u {{ dspace_backend_solr_config_path }}/oai/* oai
+        precreate-core search {{ dspace_backend_solr_config_path }}/search
+        cp -r -u {{ dspace_backend_solr_config_path }}/search/* search
+        precreate-core statistics {{ dspace_backend_solr_config_path }}/statistics
+        cp -r -u {{ dspace_backend_solr_config_path }}/statistics/* statistics
         exec solr -f
 
   # DSPACE BACKEND

@@ -1,1 +1,2 @@
 dspace_backend_install_dir: "{{ base_dir }}/dspace-backend"
+dspace_backend_solr_config_path: "/opt/solr/server/solr/configsets"
