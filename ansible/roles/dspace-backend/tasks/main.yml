@@ -3,7 +3,7 @@
 
 - name: create docker-compose file for backend
   template:
-    src: docker-compose.yml.j2
+    src: "{{ dspace_backend_compose_file_path }}"
     dest: '{{ dspace_backend_install_dir }}/docker-compose.yml'
 
 - name: Deploy dspace backend
