@@ -5,6 +5,7 @@
   template:
     src: "{{ dspace_backend_compose_file_path }}"
     dest: '{{ dspace_backend_install_dir }}/docker-compose.yml'
+    mode: '600'
 
 - name: Deploy dspace backend
   shell:

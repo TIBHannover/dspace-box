@@ -11,10 +11,14 @@ public_ui_host: "{{ public_server_host }}"
 public_ui_port: "4000"
 public_ui_protocol: http
 
-postgres_password: dspace
 postgres_dspace_db_name: dspace
 postgres_dspace_db_username: dspace
-postgres_dspace_db_password: dspace
+postgres_dspace_db_password: changeme
+# secrets used in docker compose files. approach for secret-updates: use checksum for secret as version (available via "docker_secrets_and_checksums")
+# ATTENTION: currently not available for dspace-images per default, just for images like psql (see also docker-compose files)
+docker_secrets:
+  - key: postgres_password
+    value: "{{ postgres_dspace_db_password }}"
 
 # if using docker-images from a private registry, configure the following lines
 use_private_docker_registry: false

@@ -18,7 +18,7 @@ services:
     image: {{ dspace_backend_psql_image }}
     environment:
       # we must set a password for the postgres super user
-      POSTGRES_PASSWORD: {{ postgres_dspace_db_password }}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       # we will create a user for DSpace without super user privileges
       # we will create a database owned by this user
       # provide the name of the database, the user and its password
@@ -32,6 +32,8 @@ services:
       dspacenet:
     volumes:
       - pgdata:/var/lib/postgresql/data
+    secrets:
+      - postgres_password
   
   # SOLR
   solr:
@@ -117,3 +119,10 @@ networks:
   # variable set in this file above.
   dspacenet:
     external: true
+
+secrets:
+{% for secret in docker_secrets_and_checksums %}
+  {{ secret.key }}:
+    name: {{ secret.key }}-{{ secret.checksum }}
+    external: true
+{% endfor %}
