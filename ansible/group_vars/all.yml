@@ -29,7 +29,7 @@ docker_swarm_advertise_addr: "{{ internal_server_host }}"
 
 dspace_backend_image: dspace/dspace:dspace-7.6
 dspace_backend_solr_image: dspace/dspace-solr:dspace-7.6
-dspace_backend_psql_image: dspace/dspace-postgres-pgcrypto:dspace-7.6
+dspace_backend_psql_image: postgres:15
 dspace_frontend_image: dspace/dspace-angular:dspace-7.6
 dspace_frontend_replicas: 1
 dspace_frontend_use_node_command: false

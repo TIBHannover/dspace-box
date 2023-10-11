@@ -7,6 +7,12 @@
     dest: '{{ dspace_backend_install_dir }}/docker-compose.yml'
     mode: '600'
 
+- name: create init file for psql
+  template:
+    src: "init-pgcrypto.sh.j2"
+    dest: '{{ dspace_backend_install_dir }}/init-pgcrypto.sh'
+    mode: '600'
+
 - name: Deploy dspace backend
   shell:
     chdir: "{{ dspace_backend_install_dir }}"

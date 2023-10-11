@@ -12,6 +12,11 @@
 #
 # docker-compose file created by The Library Code GmbH.
 version: '3.8'
+
+configs:
+  init_pgcrypto_file:
+    file: ./init-pgcrypto.sh
+
 services:
   # DATABASE POSTGRESQL
   postgres:
@@ -34,6 +39,10 @@ services:
       - pgdata:/var/lib/postgresql/data
     secrets:
       - postgres_password
+    configs:
+      - source: init_pgcrypto_file
+        target: /docker-entrypoint-initdb.d/init-pgcrypto.sh
+        mode: 0555
   
   # SOLR
   solr:
