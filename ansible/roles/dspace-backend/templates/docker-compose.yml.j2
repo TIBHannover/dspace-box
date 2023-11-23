@@ -90,6 +90,9 @@ services:
       db__P__password: '{{ postgres_dspace_db_password }}'
       solr__P__server: 'http://solr:8983/solr'
       proxies__P__trusted__P__ipranges: '172.28.0.0-172.28.0.255'
+{% if ui_namespace != '/' %}
+      rest__P__cors__P__allowed__D__origins: '$${dspace.ui.url},{{ public_ui_protocol }}://{{ public_ui_host }}{{ ':' + public_ui_port if public_ui_port != '80' and public_ui_port != '443' else '' }}/,{{ public_ui_protocol }}://{{ public_ui_host }}{{ ':' + public_ui_port if public_ui_port != '80' and public_ui_port != '443' else '' }}'
+{% endif %}
       # the following lines tell DSpace where the REST-API is reachable
       # and how the UI can be addressed. These URLs are important to
       # generate links.
