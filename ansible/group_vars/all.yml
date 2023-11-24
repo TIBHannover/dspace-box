@@ -34,6 +34,11 @@ dspace_frontend_image: dspace/dspace-angular:dspace-7.6
 dspace_frontend_replicas: 1
 dspace_frontend_use_node_command: false
 
+# set additional configuration properties (beside mandatory properties - see docker-compose.yml of backend) like mail-settings.
+# see also https://wiki.lyrasis.org/display/DSDOC7x/Configuration+Reference
+dspace_backend_configuration_properties:
+#  mail.server: your.mail.server
+
 dspace_admin_users:
   - email: 'test@test.edu'
     first_name: 'user'
