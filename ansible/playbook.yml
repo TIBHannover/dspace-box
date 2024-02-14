@@ -1,39 +1,7 @@
 ---
 - hosts: all
-  vars_files:
-      - vars/main.yml
-  
-  
-  
-  collections:
-  - community.general
-  - community.postgresql
-  - ansible.posix
-
   roles:
-    - ui
-    - java
-    - ant
-    - solr
-    - tomCat
-    - postgreSQL-remote
-    - maven
-    - imageFilters
-    - dspace
-    - role: dspace-migration
-      when: migrate == true
-  
-  tasks:
-  
-  - shell: ps -eo pcpu,user,args | sort -r -k1 | head -n5
-    register: ps
-
-  - debug: var=ps.stdout_lines
-
-- hosts: all
-  become: true
-  vars_files:
-      - vars/main.yml
-  roles:
-    - role: apache
-      when: install_apache
+    - init-facts
+    - docker-setup
+    - dspace-backend
+    - dspace-frontend

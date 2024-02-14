@@ -1,0 +1,16 @@
+
+- set_fact: work_user="{{ ansible_user | default(lookup('env', 'USER')) }}"
+
+- set_fact: base_dir="{{ ansible_env.HOME }}"
+
+- set_fact: public_server_url="{{ public_server_protocol }}://{{ public_server_host }}{{ ':' + public_server_port if public_server_port != '80' and public_server_port != '443' else '' }}{{ server_namespace }}"
+- set_fact: public_ui_url="{{ public_ui_protocol }}://{{ public_ui_host }}{{ ':' + public_ui_port if public_ui_port != '80' and public_ui_port != '443' else '' }}{{ ui_namespace }}"
+
+# approach: use checksum for secret as version to be able to deploy secret-updates when the secret-value changes
+- name: Determine secrets checksums
+  set_fact:
+    docker_secrets_checksums: "{{ docker_secrets | map(attribute='value') | map('checksum') | map('split') | map('zip', ['checksum']) | map('map', 'reverse') | map('community.general.dict') | list }}"
+- name: Enrich secrets by checksums
+  set_fact:
+    docker_secrets_and_checksums: "{{ docker_secrets | zip(docker_secrets_checksums) | map('combine') | list }}"
+  no_log: true

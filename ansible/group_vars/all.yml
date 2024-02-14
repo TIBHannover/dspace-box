@@ -1,0 +1,46 @@
+---
+
+base_path: ""
+server_namespace: "{{ base_path }}/server"
+ui_namespace: "{{ base_path }}/"
+public_server_host: 192.168.56.111
+internal_server_host: "{{ public_server_host }}"
+public_server_port: "8080"
+public_server_protocol: http
+public_ui_host: "{{ public_server_host }}"
+public_ui_port: "4000"
+public_ui_protocol: http
+
+postgres_dspace_db_name: dspace
+postgres_dspace_db_username: dspace
+postgres_dspace_db_password: changeme
+# secrets used in docker compose files. approach for secret-updates: use checksum for secret as version (available via "docker_secrets_and_checksums")
+# ATTENTION: currently not available for dspace-images per default, just for images like psql (see also docker-compose files)
+docker_secrets:
+  - key: postgres_password
+    value: "{{ postgres_dspace_db_password }}"
+
+# if using docker-images from a private registry, configure the following lines
+use_private_docker_registry: false
+docker_registry_url:
+docker_registry_user:
+docker_registry_password:
+docker_swarm_advertise_addr: "{{ internal_server_host }}"
+
+dspace_backend_image: dspace/dspace:dspace-7.6
+dspace_backend_solr_image: dspace/dspace-solr:dspace-7.6
+dspace_backend_psql_image: postgres:15
+dspace_frontend_image: dspace/dspace-angular:dspace-7.6
+dspace_frontend_replicas: 1
+dspace_frontend_use_node_command: false
+
+# set additional configuration properties (beside mandatory properties - see docker-compose.yml of backend) like mail-settings.
+# see also https://wiki.lyrasis.org/display/DSDOC7x/Configuration+Reference
+dspace_backend_configuration_properties:
+#  mail.server: your.mail.server
+
+dspace_admin_users:
+  - email: 'test@test.edu'
+    first_name: 'user'
+    last_name: 'admin'
+    password: 'admin'

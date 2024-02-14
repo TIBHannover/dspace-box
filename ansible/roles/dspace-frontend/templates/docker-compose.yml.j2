@@ -1,0 +1,87 @@
+# This is the docker-compose file to run the frontend of DSpace 7
+# docker-compose file created by The Library Code GmbH.
+#
+# The backend and frontend must have one common network. The backend
+# must know the IP addresses the frontend might use to connect.
+# Therfore, please create an external network dspacenet. It is
+# referenced by this compose file as well as the compose file for the
+# backend. To create the network please run `docker network create 
+# --attachable --subnet 172.28.0.0/24 dspacenet`.
+# You might want to change the ip address of the network. If you
+# change that ip address space, you must change the environment
+# variable 'proxies__P__trusted__P__ipranges' of the dspace service in
+# the backend compose file.
+#
+version: '3.8'
+services:
+  # DSPACE FRONTEND
+  angular:
+    image: {{ dspace_frontend_image }}
+    networks:
+      dspacenet:
+    ports:
+      - 4000:4000
+    environment:
+      # These environment variables tell Angular where to listen to
+      # It is recommended to put a reverse proxy in front of
+      # dspace-angular. You can use nginx or apache httpd for that.
+      # If you do so, you can let the proxy handle the ssl
+      # termination and run the angular UI without ssl.
+      DSPACE_UI_HOST: '0.0.0.0'
+      DSPACE_UI_SSL: 'false'
+      DSPACE_UI_NAMESPACE: '{{ ui_namespace }}'
+      DSPACE_UI_PORT: '4000'
+      # The following information is necessary to know how to connect
+      # to the backend.
+      DSPACE_REST_NAMESPACE: '{{ server_namespace }}'
+      # While DSPACE_REST_NAMESPACE is probably equal for test and
+      # production environments, the following information are for
+      # production.
+      DSPACE_REST_HOST: '{{ public_server_host }}'
+      DSPACE_REST_PORT: '{{ public_server_port }}'
+      DSPACE_REST_SSL: '{{ 'true' if public_server_port == '443' else 'false' }}'
+      NODE_ENV: 'production'
+      # If you want to connect to a backend without a valid SSL certificate,
+      # you have to run the frontend in development mode. To run the frontend
+      # in development you have to change the Dockerfile and rebuild the
+      # frontend container.  It contains comments explaining what you need to
+      # do.
+      ## DSPACE_REST_HOST: 'localhost'
+      ## DSPACE_REST_PORT: '8080'
+      ## DSPACE_REST_SSL: 'false'
+      ## NODE_ENV: 'development'
+      # On production you want to switch on caching and give angular more memory
+      DSPACE_CACHE_SERVERSIDE_ANONYMOUSCACHE_MAX: '1000'
+      DSPACE_CACHE_SERVERSIDE_ANONYMOUSCACHE_TIMETOLIVE: '21600000'
+      NODE_OPTIONS: '--max-old-space-size=3072'
+    working_dir: /app
+{% if dspace_frontend_use_node_command %}
+    command:
+      - /usr/local/bin/node
+      - ./dist/server/main.js
+      # If you run the frontend for local testing in development, you must
+      # use `yarn start_dev` as command instead to start it.
+      ## - yarn
+      ## - start:dev
+      ## - '--disable-host-check'
+{% endif %}
+    deploy:
+      mode: replicated
+      replicas: {{ dspace_frontend_replicas }} # In production you should run the frontend multiple
+        # times in parallel. This could be done using docker swarm and
+        # multiple replicas. You could also run the container multiple
+        # times on different ports and set a load balancer in front of
+        # it. On a dev system without docker swarm and loadbalancer
+        # the port 4000 cannot be allocated multiple times. Therefore
+        # we currently run one replica only.
+
+networks:
+  # please create this network externally, so that we can use it
+  # for the backend and the frontend.
+  # It must use an ip address range, that is listed up in the
+  # configuration property 'proxies.trusted.ipranges' of the dspace
+  # backend. This can be set in your local.cfg or in an environment
+  # variable in the backend compose file.
+  dspacenet:
+    external: true
+

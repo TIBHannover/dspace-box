@@ -1,0 +1,2 @@
+dspace_frontend_install_dir: "{{ base_dir }}/dspace-frontend"
+dspace_frontend_compose_file_path: "docker-compose.yml.j2"

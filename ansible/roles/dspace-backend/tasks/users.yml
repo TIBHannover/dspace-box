@@ -1,0 +1,22 @@
+- name: "wait for backend container to come up"
+  wait_for:
+    port: 8080
+    timeout: 600
+
+- name: List users
+  shell:
+    cmd: sg docker -c 'docker exec $(sg docker -c "docker ps -q -f name=dspace-backend_dspace") sh -c "/dspace/bin/dspace user --list"'
+  register: dspace_list_existing_users_result
+  until: dspace_list_existing_users_result.rc == 0
+  retries: 10
+  delay: 5
+
+- name: Print existing dspace users
+  ansible.builtin.debug:
+    var: dspace_list_existing_users_result
+
+- name: Create Admin users
+  shell:
+    cmd: sg docker -c 'docker exec $(sg docker -c "docker ps -q -f name=dspace-backend_dspace") sh -c "/dspace/bin/dspace create-administrator -e {{ item.email }} -f {{ item.first_name }} -l {{ item.last_name }} -p {{ item.password }}"'
+  loop: "{{ dspace_admin_users }}"
+  when: not (dspace_list_existing_users_result.stdout | regex_search('^.+\t' + item.email + '/', multiline=True))

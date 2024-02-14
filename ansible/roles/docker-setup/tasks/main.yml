@@ -1,0 +1,44 @@
+---
+- name: Install docker
+  become: yes
+  import_role:
+    name: geerlingguy.docker
+  vars:
+    docker_users:
+      - "{{ work_user }}"
+    docker_daemon_options:
+      data-root: "{{ docker_data_root | default('/var/lib/docker') }}"
+
+- name: Check swarm
+  shell:
+    cmd: sg docker -c "docker info | grep 'Swarm. active'"
+  register: docker_swarm_info_result
+  failed_when: docker_swarm_info_result.rc != 1 and docker_swarm_info_result.rc != 0
+
+- name: Init swarm
+  command:
+    cmd: sg docker -c "docker swarm init {{ '--advertise-addr ' + docker_swarm_advertise_addr if (docker_swarm_advertise_addr is defined) and (docker_swarm_advertise_addr != "") and (docker_swarm_advertise_addr is not none) else '' }}"
+  when: docker_swarm_info_result.rc != 0
+
+- name: Check network
+  shell:
+    cmd: sg docker -c "docker network ls | grep 'dspacenet'"
+  register: docker_network_ls_result
+  failed_when: docker_network_ls_result.rc != 1 and docker_network_ls_result.rc != 0
+
+- name: Create network
+  command:
+    cmd: sg docker -c "docker network create -d overlay --scope=swarm --attachable --subnet 172.28.0.0/24 dspacenet"
+  when: docker_network_ls_result.rc != 0
+
+- name: Check existing secrets
+  command:
+    cmd: sg docker -c "docker secret ls --format '{{ '{{' }} .Name {{ '}}' }}'"
+  register: docker_secret_ls_result
+
+- name: Create secrets
+  shell:
+    cmd: sg docker -c "echo '{{ item.value }}' | docker secret create {{ item.key + '-' + item.checksum }} -"
+  loop: "{{ docker_secrets_and_checksums }}"
+  when: not (docker_secret_ls_result.stdout | regex_search('^' + item.key + '-' + item.checksum, multiline=True))
+  no_log: true
