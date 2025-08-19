@@ -12,7 +12,7 @@
     chdir: "{{ dspace_frontend_install_dir }}"
     cmd: sg docker -c "docker login -u {{ docker_registry_user }} -p {{ docker_registry_password }} {{ docker_registry_url }} && docker-compose pull && docker stack deploy --with-registry-auth --compose-file docker-compose.yml dspace-frontend"
   when: use_private_docker_registry
-  no_log: true
+  no_log: "{{ ansible_frontend_nolog }}"
 
 - name: Deploy dspace frontend
   shell:
