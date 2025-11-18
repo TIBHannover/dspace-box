@@ -23,7 +23,7 @@
 - name: Deploy dspace backend
   shell:
     chdir: "{{ dspace_backend_install_dir }}"
-    cmd: sg docker -c "docker-compose pull && docker stack deploy --compose-file docker-compose.yml dspace-backend"
+    cmd: sg docker -c "docker compose pull && docker stack deploy --compose-file docker-compose.yml dspace-backend"
   when: not use_private_docker_registry
 
 - include_tasks: users.yml
